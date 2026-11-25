@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux & Bash for DevOps — уроки + терминал</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/700.css">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--deep:#010409;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;
+--green:#3fb950;--cyan:#58a6ff;--yellow:#d29922;--red:#f85149;--purple:#bc8cff;--orange:#ffa657;
+--headH:56px;--sideW:250px;--termW:430px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15.5px/1.65 -apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+::selection{background:#1f6feb55}
+*{scrollbar-width:thin;scrollbar-color:#30363d #0d1117}
+::-webkit-scrollbar{width:10px;height:8px}
+::-webkit-scrollbar-track{background:#0d1117}
+::-webkit-scrollbar-thumb{background:#30363d;border-radius:6px;border:2px solid #0d1117}
+::-webkit-scrollbar-thumb:hover{background:#3fb95088}
+a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+code,.mono{font-family:"JetBrains Mono",Consolas,monospace}
+code{background:#1f2530;color:var(--green);padding:1px 6px;border-radius:5px;font-size:13px}
+pre{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px 14px;overflow:auto;margin:10px 0;font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:1.55}
+pre .c{color:var(--muted)}pre .g{color:var(--green)}pre .y{color:var(--yellow)}pre .r{color:var(--red)}pre .p{color:var(--purple)}pre .cy{color:var(--cyan)}
+.kbd{background:#1f2530;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:1px 6px;font-family:"JetBrains Mono",monospace;font-size:12px}
+
+/* ===== HEADER ===== */
+header.top{position:fixed;inset:0 0 auto 0;height:var(--headH);z-index:70;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0d1117f0;backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.brand{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.brand b{font-size:15px;white-space:nowrap}
+.brand b .g{color:var(--green)}
+.brand a{font-size:11px;color:var(--muted)}
+.hspace{flex:1}
+.hprog{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.hprog b{color:var(--green)}
+.hbar{width:110px;height:6px;background:#21262d;border-radius:4px;overflow:hidden}
+.hbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--cyan));transition:width .4s}
+.hbtn{background:#1f2530;border:1px solid var(--border);color:var(--text);border-radius:7px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
+.hbtn:hover{border-color:var(--green);color:var(--green)}
+.hbtn.on{border-color:var(--green);color:var(--green);background:#3fb95015}
+#navBtn{display:none;padding:6px 10px}
+
+/* ===== SIDEBAR ===== */
+#sidebar{position:fixed;left:0;top:var(--headH);bottom:0;width:var(--sideW);z-index:60;background:var(--bg);border-right:1px solid var(--border);overflow-y:auto;padding:12px 10px;transition:transform .3s}
+.slabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:2px 6px 8px}
+.srow{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:7px 9px;margin-bottom:4px;cursor:pointer;color:var(--text)}
+.srow:hover{border-color:var(--border);background:#161b22}
+.srow.active{border-color:var(--green);background:#3fb95012}
+.srow .l1{display:flex;gap:7px;align-items:baseline;font-size:13px}
+.srow .num{font-family:"JetBrains Mono",monospace;color:var(--muted);font-size:11px}
+.srow.active .num{color:var(--green)}
+.srow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srow .cnt{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace}
+.srow .cnt.full{color:var(--green)}
+.sbar{height:4px;background:#21262d;border-radius:3px;margin-top:5px;overflow:hidden}
+.sbar i{display:block;height:100%;width:0;background:var(--green);transition:width .4s}
+.sfoot{margin-top:12px;padding:10px 6px;border-top:1px solid var(--border);font-size:11.5px;color:var(--muted)}
+#progReset{margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer}
+#progReset:hover{color:var(--red);border-color:var(--red)}
+#navBackdrop{position:fixed;inset:0;background:#010409aa;z-index:59;display:none}
+
+/* ===== MAIN / LESSONS ===== */
+main{margin-left:var(--sideW);margin-right:var(--termW);padding:calc(var(--headH) + 20px) 30px 60px;transition:margin-right .3s}
+body.term-closed main{margin-right:0}
+.lesson{display:none;max-width:780px;margin:0 auto}
+.lesson.active{display:block;animation:fadeUp .35s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.lhead{border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:14px}
+.lhead h2{margin:0 0 8px;font-size:23px}
+.lhead h2 .lnum{color:var(--green);font-family:"JetBrains Mono",monospace;font-size:16px;margin-right:8px}
+.lprog{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
+.lprog .lbar{flex:1;max-width:280px;height:7px;background:#21262d;border-radius:4px;overflow:hidden}
+.lprog .lbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--cyan));transition:width .4s}
+.lprog b{color:var(--green)}
+h3{margin:22px 0 8px;font-size:16.5px;color:var(--cyan)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px;margin:14px 0 4px}
+.t-theory{background:#1f6feb22;color:var(--cyan);border:1px solid #1f6feb55}
+.t-viz{background:#bc8cff22;color:var(--purple);border:1px solid #bc8cff55}
+.t-practice{background:#3fb95022;color:var(--green);border:1px solid #3fb95055}
+.etym{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#0f141b;border:1px dashed var(--border);border-radius:8px;padding:7px 12px;margin:8px 0;font-size:13.5px}
+.etym .w{font-family:"JetBrains Mono",monospace;color:var(--green);font-weight:700}
+.etym .arr{color:var(--purple)}
+.etym .en{color:var(--yellow)}
+.note{border-left:3px solid var(--yellow);background:#d2992211;padding:8px 12px;border-radius:0 6px 6px 0;margin:10px 0;font-size:13.5px}
+.note.danger{border-color:var(--red);background:#f8514911}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13.5px}
+th,td{border:1px solid var(--border);padding:6px 10px;text-align:left}
+th{background:#1f2530;color:var(--cyan)}
+.anatomy{font-family:"JetBrains Mono",monospace;font-size:16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;margin:10px 0;text-align:center}
+.anatomy .cmd{color:var(--green)}.anatomy .flag{color:var(--yellow)}.anatomy .arg{color:var(--cyan)}
+.anatomy small{display:block;color:var(--muted);font-size:11px;font-family:-apple-system,sans-serif;margin-top:2px}
+.anatomy .part{display:inline-block;margin:4px 9px;vertical-align:top}
+.try{display:inline-block;background:#1f2530;border:1px solid #3fb95066;color:var(--green);border-radius:6px;padding:4px 10px;font-family:"JetBrains Mono",monospace;font-size:12px;cursor:pointer;margin:3px 4px 3px 0}
+.try:hover{border-color:var(--green);background:#3fb95022}
+.trybox{border:1px solid #3fb95044;background:#3fb9500d;border-radius:8px;padding:8px 12px;margin:10px 0;font-size:13.5px}
+
+/* ===== TASKS ===== */
+.task{border:1px solid var(--border);border-left:3px solid var(--border);border-radius:8px;padding:10px 14px;margin:10px 0;background:#0f141b;transition:border-color .3s}
+.task.tterm{border-left-color:var(--cyan)}
+.task.quiz{border-left-color:var(--purple)}
+.task.solved{border-left-color:var(--green);background:#3fb9500a}
+.task.flash{animation:flash 1.2s}
+@keyframes flash{0%,60%{box-shadow:0 0 0 2px var(--cyan)}100%{box-shadow:none}}
+.thead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:4px}
+.kind{font-weight:600;font-size:13px;color:var(--muted)}
+.tterm .kind{color:var(--cyan)}
+.quiz .kind{color:var(--purple)}
+.ttitle{font-weight:600}
+.task p{margin:6px 0}
+.tstatus{flex:none;font-size:11.5px;font-family:"JetBrains Mono",monospace;color:var(--muted);border:1px dashed var(--border);border-radius:20px;padding:2px 10px}
+.task.solved .tstatus{color:var(--green);border:1px solid var(--green);background:#3fb95015}
+.done-btn{flex:none;background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;font-size:11.5px;padding:2px 9px;cursor:pointer}
+.done-btn:hover{border-color:var(--green);color:var(--green)}
+.done-btn.on{background:#3fb95022;border-color:var(--green);color:var(--green)}
+details{margin:6px 0;border:1px dashed var(--border);border-radius:6px;padding:4px 10px;background:#10151d}
+summary{cursor:pointer;color:var(--yellow);font-size:13px;font-weight:600;user-select:none}
+summary:hover{color:var(--orange)}
+details.ans summary{color:var(--green)}
+details[open] summary{margin-bottom:6px}
+.qopts{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.qopts button{text-align:left;background:#1f2530;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:"JetBrains Mono",monospace}
+.qopts button:hover:not(:disabled){border-color:var(--cyan)}
+.qopts button.right{border-color:var(--green);background:#3fb95022;color:var(--green)}
+.qopts button.wrong{border-color:var(--red);background:#f8514922;color:var(--red)}
+.qopts button:disabled{cursor:default;opacity:.85}
+.qx{font-size:13px;border-left:3px solid var(--green);padding:6px 10px;background:#3fb9500d;margin-top:6px}
+.qretry{background:none;border:1px solid var(--border);color:var(--yellow);border-radius:6px;padding:3px 10px;font-size:12px;cursor:pointer;margin-top:6px}
+
+/* ===== LESSON NAV ===== */
+.lnav{max-width:780px;margin:34px auto 0;display:flex;align-items:center;gap:10px;border-top:1px solid var(--border);padding-top:16px}
+.lnav button{background:#1f2530;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 16px;font-size:13.5px;cursor:pointer}
+.lnav button:hover:not(:disabled){border-color:var(--green);color:var(--green)}
+.lnav button:disabled{opacity:.35;cursor:default}
+.lnav .pos{flex:1;text-align:center;font-size:12.5px;color:var(--muted);font-family:"JetBrains Mono",monospace}
+footer.site{max-width:780px;margin:26px auto 0;color:var(--muted);font-size:12.5px;border-top:1px solid var(--border);padding-top:14px}
+
+/* ===== TERMINAL PANEL ===== */
+.term{position:fixed;right:0;top:var(--headH);bottom:0;width:var(--termW);z-index:65;background:var(--deep);border-left:1px solid var(--border);display:flex;flex-direction:column;transform:translateX(0);transition:transform .3s}
+body.term-closed .term{transform:translateX(103%)}
+.term-bar{background:var(--panel);padding:7px 10px;display:flex;gap:7px;align-items:center;border-bottom:1px solid var(--border)}
+.dot{width:11px;height:11px;border-radius:50%;flex:none}
+.term-title{color:var(--muted);font-size:11.5px;margin-left:4px;font-family:"JetBrains Mono",monospace;flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:2px 9px;font-size:12px;cursor:pointer}
+.tbtn:hover{color:var(--cyan);border-color:var(--cyan)}
+.term-task{padding:6px 12px;font-size:12px;border-bottom:1px solid var(--border);background:#0d1117;color:var(--muted);cursor:pointer;display:flex;gap:7px;align-items:center;min-height:32px}
+.term-task:hover{color:var(--cyan)}
+.term-task .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.term-task.ok{color:var(--green);cursor:default}
+.term-out{flex:1;padding:12px;font-family:"JetBrains Mono",monospace;font-size:12.5px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.term-out::-webkit-scrollbar-track{background:var(--deep)}
+.term-out .u{color:var(--green)}.term-out .e{color:var(--red)}.term-out .m{color:var(--muted)}
+.tchips{display:flex;gap:5px;padding:6px 10px;border-top:1px solid var(--border);overflow-x:auto;background:#0d1117}
+.chip{flex:none;background:#1f2530;border:1px solid var(--border);color:var(--cyan);border-radius:6px;padding:3px 8px;font-family:"JetBrains Mono",monospace;font-size:11px;cursor:pointer}
+.chip:hover{border-color:var(--cyan)}
+.term-in{display:flex;align-items:center;border-top:1px solid var(--border);padding:9px 12px;background:var(--bg)}
+.term-in .ps{color:var(--green);font-family:"JetBrains Mono",monospace;font-size:12.5px;margin-right:8px;white-space:nowrap}
+.term-in input{flex:1;background:transparent;border:none;color:var(--text);font-family:"JetBrains Mono",monospace;font-size:12.5px;outline:none;min-width:0}
+.term-fab{position:fixed;z-index:66;display:none;background:#161b22;border:1px solid var(--green);color:var(--green);cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:12.5px;right:0;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;padding:14px 8px;border-radius:8px 0 0 8px;border-right:none}
+.term-fab:hover{background:#3fb95022}
+body.term-closed .term-fab{display:block}
+#termBackdrop{position:fixed;inset:0;background:#010409b0;z-index:64;display:none}
+
+/* ===== TOASTS ===== */
+#toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:#161b22;border:1px solid var(--green);color:var(--green);border-radius:8px;padding:8px 16px;font-size:13px;box-shadow:0 6px 24px #01040999;animation:toastIn .3s;max-width:min(480px,90vw)}
+.toast.big{border-color:var(--yellow);color:var(--yellow)}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.toast.out{opacity:0;transition:opacity .4s}
+
+/* ===== PIPE DEMO ===== */
+.pipe{display:grid;grid-template-columns:1fr 26px 1fr 26px 100px;gap:5px;margin:10px 0}
+.pcol{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:9px;min-height:170px}
+.pcol h4{margin:0 0 7px;font-size:11.5px;font-family:"JetBrains Mono",monospace;color:var(--cyan)}
+.parr{display:flex;align-items:center;justify-content:center;color:var(--purple);font-size:18px;font-weight:700}
+.pline{font-family:"JetBrains Mono",monospace;font-size:10px;padding:3px 5px;border-radius:5px;margin:3px 0;border:1px solid transparent;transition:all .3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pline.scan{border-color:var(--yellow);background:#d2992222;transform:translateX(3px)}
+.pline.pass{border-color:var(--green);color:var(--green)}
+.pline.drop{color:var(--muted);text-decoration:line-through;opacity:.45;border-color:var(--red)}
+.fline{font-family:"JetBrains Mono",monospace;font-size:10px;padding:3px 5px;border-radius:5px;margin:3px 0;border:1px solid var(--green);color:var(--green);animation:pop .3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcount{font-family:"JetBrains Mono",monospace;font-size:38px;color:var(--green);text-align:center;margin-top:22px;transition:transform .15s}
+.pcount.pop{transform:scale(1.25)}
+.pstat{font-size:12.5px;color:var(--muted);margin-top:6px}
+.pbtns{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+.pbtns button{background:#1f2530;border:1px solid var(--green);color:var(--green);border-radius:6px;padding:5px 13px;cursor:pointer;font-size:12.5px}
+.pbtns button.ghost{border-color:var(--border);color:var(--muted)}
+.pbtns button:hover{background:#3fb95022}
+.pbtns button:disabled{opacity:.5;cursor:default}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ===== RWX ===== */
+.rwx{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;margin:10px 0}
+.rwxgrid{display:grid;grid-template-columns:100px repeat(3,58px);gap:6px;align-items:center;font-size:12.5px}
+.rwxgrid .who{color:var(--muted)}
+.rwxgrid button{font-family:"JetBrains Mono",monospace;font-size:14px;padding:5px 0;border-radius:6px;border:1px solid var(--border);background:#1f2530;color:var(--muted);cursor:pointer}
+.rwxgrid button[aria-pressed="true"]{border-color:var(--green);color:var(--green);background:#3fb95022}
+.rwxout{font-family:"JetBrains Mono",monospace;margin-top:10px;font-size:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.rwxout .sym{color:var(--purple)}.rwxout .num{color:var(--yellow);font-weight:700;font-size:19px}.rwxout .cmd{color:var(--green)}
+.rwxpresets{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.rwxpresets button,.copybtn{background:#1f2530;border:1px solid var(--border);color:var(--cyan);border-radius:6px;padding:3px 9px;font-family:"JetBrains Mono",monospace;font-size:11.5px;cursor:pointer}
+.rwxpresets button:hover,.copybtn:hover{border-color:var(--cyan)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1360px){:root{--termW:380px;--sideW:230px}}
+@media(max-width:1100px){
+:root{--termW:min(430px,100vw)}
+#navBtn{display:block}
+#sidebar{transform:translateX(-103%)}
+body.nav-open #sidebar{transform:translateX(0);box-shadow:0 0 40px #010409}
+body.nav-open #navBackdrop{display:block}
+main{margin-left:0;margin-right:0!important;padding:calc(var(--headH) + 16px) 18px 60px}
+body:not(.term-closed) #termBackdrop{display:block}
+.term{box-shadow:-10px 0 40px #010409}
+.term-fab{writing-mode:horizontal-tb;top:auto;bottom:18px;right:16px;transform:none;border-radius:10px;border-right:1px solid var(--green);padding:10px 16px;box-shadow:0 6px 24px #01040999}
+}
+@media(max-width:640px){
+.hprog .htext{display:none}
+.hbar{width:70px}
+.brand a{display:none}
+main{padding-left:13px;padding-right:13px}
+.pipe{grid-template-columns:1fr;gap:4px}
+.parr{transform:rotate(90deg);padding:1px}
+.pcol{min-height:auto}
+.pcount{margin-top:2px}
+.rwxgrid{grid-template-columns:84px repeat(3,50px)}
+.lnav{flex-wrap:wrap}.lnav .pos{order:-1;width:100%;flex:none}
+.lnav button{flex:1}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body class="term-closed">
+
+<header class="top">
+  <button class="hbtn" id="navBtn" aria-label="Меню уроков">☰</button>
+  <div class="brand"><b>Linux &amp; Bash <span class="g">for DevOps</span></b><a href="https://github.com/wusder">github.com/wusder</a></div>
+  <div class="hspace"></div>
+  <div class="hprog"><span class="htext">Всего: <b id="allText">0/0</b></span><div class="hbar"><i id="allBar"></i></div></div>
+  <button class="hbtn" id="termToggle" aria-pressed="false">⌨ Терминал</button>
+</header>
+
+<div id="navBackdrop"></div>
+<aside id="sidebar"><div class="slabel">Уроки · один за раз</div><div id="srows"></div>
+  <div class="sfoot">Прогресс хранится в твоём браузере.<br><button id="progReset">↺ Сбросить прогресс</button></div>
+</aside>
+
+<main id="main">
+
+<!-- ========== УРОК 0 ========== -->
+<section class="lesson" id="m0" data-num="00" data-short="Основы: как читать команды">
+  <div class="lhead"><h2><span class="lnum">00</span>Как читать любую команду</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <p><b>Терминал</b> — окно, где ты управляешь компьютером текстом, а не мышкой. <b>Shell</b> («оболочка») — программа-переводчик: читает твою строку и запускает нужное. <b>Bash</b> (<b>B</b>ourne <b>a</b>gain <b>sh</b>ell) — самый популярный shell. Представь официанта: ты говоришь словами-командами, он несёт их «на кухню» (системе) и приносит результат.</p>
+  <p>Справа у тебя всегда стоит <b>учебный терминал</b> — безопасная песочница. Кнопка «⌨ Терминал» сверху скрывает и открывает его. Зелёные кнопки <button class="try" style="cursor:default">команда ▶</button> в уроках сами вставляют команду в терминал.</p>
+  <span class="tag t-viz">👁 Визуализация — анатомия команды</span>
+  <div class="anatomy">
+    <span class="part"><span class="cmd">wc</span><small>КОМАНДА<br>что делаем</small></span>
+    <span class="part"><span class="flag">-l</span><small>ФЛАГ<br>как делаем</small></span>
+    <span class="part"><span class="arg">app.log</span><small>АРГУМЕНТ<br>над чем делаем</small></span>
+  </div>
+  <ul>
+    <li><b style="color:var(--green)">Команда</b> — имя программы, почти всегда сокращение английского слова.</li>
+    <li><b style="color:var(--yellow)">Флаг</b> (опция, ключ) — с <code>-</code> (буква) или <code>--</code> (слово). Меняет поведение: «считай не слова, а строки».</li>
+    <li><b style="color:var(--cyan)">Аргумент</b> — объект: файл, папка, число, текст.</li>
+  </ul>
+  <div class="note">💡 Короткие флаги склеиваются: <code>ls -l -a -h</code> = <code>ls -lah</code>. Linux различает регистр: <code>-R</code> и <code>-r</code> — разные флаги, <code>File.txt</code> и <code>file.txt</code> — разные файлы.</div>
+  <h3>Словарь: что откуда сокращено</h3>
+  <div class="tblwrap"><table>
+    <tr><th>Команда</th><th>Английское слово</th><th>Как звучит</th><th>Смысл</th></tr>
+    <tr><td><code>ls</code></td><td><b>l</b>i<b>s</b>t</td><td>«лист»</td><td>список файлов</td></tr>
+    <tr><td><code>cd</code></td><td><b>c</b>hange <b>d</b>irectory</td><td>«чейндж директорИ»</td><td>сменить папку</td></tr>
+    <tr><td><code>pwd</code></td><td><b>p</b>rint <b>w</b>orking <b>d</b>irectory</td><td>«принт воркинг директорИ»</td><td>где я сейчас</td></tr>
+    <tr><td><code>cat</code></td><td>con<b>cat</b>enate</td><td>«конкАтенейт»</td><td>склеить → вывести файл</td></tr>
+    <tr><td><code>wc</code></td><td><b>w</b>ord <b>c</b>ount</td><td>«ворд каунт»</td><td>счётчик слов/строк</td></tr>
+    <tr><td><code>grep</code></td><td><b>g</b>lobal <b>re</b>gex <b>p</b>rint</td><td>«греп»</td><td>найти строки по шаблону</td></tr>
+    <tr><td><code>mkdir</code></td><td><b>m</b>a<b>k</b>e <b>dir</b>ectory</td><td>«мейк директорИ»</td><td>создать папку</td></tr>
+    <tr><td><code>rm</code> / <code>cp</code> / <code>mv</code></td><td>remove / copy / move</td><td>«римув / копи / мув»</td><td>удалить / копия / перенос</td></tr>
+    <tr><td><code>df</code> / <code>du</code></td><td>disk free / disk usage</td><td>«диск фри / юсидж»</td><td>место на диске / вес папки</td></tr>
+    <tr><td><code>ps</code></td><td><b>p</b>rocess <b>s</b>tatus</td><td>«процесс стэйтус»</td><td>список процессов</td></tr>
+    <tr><td><code>ss</code></td><td><b>s</b>ocket <b>s</b>tatistics</td><td>«эс-эс»</td><td>статистика сокетов (порты!)</td></tr>
+    <tr><td><code>sed</code></td><td><b>s</b>tream <b>ed</b>itor</td><td>«стрим эдитор»</td><td>потоковый редактор</td></tr>
+    <tr><td><code>awk</code></td><td>Aho + Weinberger + Kernighan</td><td>«ок»</td><td>фамилии трёх авторов!</td></tr>
+  </table></div>
+  <div class="trybox">▶ Первое касание: <button class="try">help</button><button class="try">man wc</button> <span style="color:var(--muted)">— man даёт справку с переводом прямо в терминале</span></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="help"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Запусти справку.</b> Введи <code>help</code> в терминале справа — увидишь всё, что он умеет. Задание отметится само ✓</p>
+    <details><summary>Подсказка</summary>Четыре буквы: h-e-l-p, затем Enter.</details></div>
+  <div class="task quiz" data-ok="1"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Что такое <b>флаг</b>?</p>
+    <div class="qopts"><button>Имя программы, которую запускаем</button><button>Опция, которая меняет поведение команды</button><button>Файл, над которым работаем</button></div>
+    <div class="qx" hidden>Флаг — «настройка» запуска: <code>-l</code> у <code>wc</code> переключает его со слов на строки. Имя программы — команда, файл — аргумент.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>В команде <code>head -n 5 access.log</code> назови команду, флаг и аргумент.</p>
+    <details><summary>Подсказка</summary>Первое слово — команда; что с <code>-</code> — флаг; имя файла — объект.</details>
+    <details class="ans"><summary>Ответ</summary><code>head</code> — команда («голова», начало файла), <code>-n 5</code> — флаг со значением (<b>n</b>umber — число строк), <code>access.log</code> — аргумент.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🐛 Найди ошибку</span></div>
+    <p>Новичок написал <code>LS -L</code> и получил «command not found». Две причины?</p>
+    <details class="ans"><summary>Ответ</summary>Linux различает регистр: команда — <code>ls</code> маленькими, и флаг <code>-l</code> тоже маленький. Правильно: <code>ls -l</code>.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧩 Вставь пропуск</span></div>
+    <p>«Список: подробно + скрытые + размеры по-человечески»: <code>ls -___</code> (три буквы одним ключом).</p>
+    <details><summary>Подсказка</summary><b>l</b>ong + <b>a</b>ll + <b>h</b>uman.</details>
+    <details class="ans"><summary>Ответ</summary><code>ls -lah</code></details></div>
+</section>
+
+<!-- ========== УРОК 1 ========== -->
+<section class="lesson" id="m1" data-num="01" data-short="Навигация: pwd · ls · cd">
+  <div class="lhead"><h2><span class="lnum">01</span>Навигация: pwd, ls, cd</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <p>Файловая система Linux — одно большое дерево от корня <code>/</code>. Ты всегда «стоишь» в какой-то папке, как на этаже здания. Три команды: «где я», «что тут», «перейди».</p>
+  <div class="etym"><span class="w">pwd</span><span class="arr">→</span><span class="en">print working directory</span><span class="arr">→</span><span>«напечатать рабочую папку» = где я?</span></div>
+  <div class="etym"><span class="w">ls</span><span class="arr">→</span><span class="en">list</span><span class="arr">→</span><span>«список» = что здесь лежит?</span></div>
+  <div class="tblwrap"><table>
+    <tr><th>Флаг</th><th>От слова</th><th>Что делает</th></tr>
+    <tr><td><code>-l</code></td><td><b>l</b>ong — длинный</td><td>подробно: права, размер, дата</td></tr>
+    <tr><td><code>-a</code></td><td><b>a</b>ll — все</td><td>показать скрытые (имя начинается с точки: <code>.env</code>)</td></tr>
+    <tr><td><code>-h</code></td><td><b>h</b>uman — человечный</td><td>размеры в KB/MB вместо байтов</td></tr>
+  </table></div>
+  <div class="etym"><span class="w">cd</span><span class="arr">→</span><span class="en">change directory</span><span class="arr">→</span><span>«сменить папку» = перейди туда</span></div>
+  <span class="tag t-viz">👁 Визуализация — дерево и спец-адреса</span>
+  <pre>/
+└── home/
+    └── devops/        <span class="g">← ты здесь (домой ведёт ~)</span>
+        ├── notes.txt
+        ├── servers.txt
+        ├── .env       <span class="c">(скрытый: виден только ls -a)</span>
+        ├── logs/      <span class="c">app.log, error.log</span>
+        └── scripts/   <span class="c">deploy.sh</span>
+
+<span class="g">cd logs</span>     <span class="c"># вниз, в папку logs (относительный путь)</span>
+<span class="g">cd ..</span>       <span class="c"># .. = на этаж ВВЕРХ (родитель)</span>
+<span class="g">cd .</span>        <span class="c"># . = текущая папка («остаться»)</span>
+<span class="g">cd ~</span>        <span class="c"># ~ = домой (cd без аргумента — тоже домой)</span>
+<span class="g">cd /</span>        <span class="c"># / = самый корень дерева</span></pre>
+  <div class="note">💡 <b>Абсолютный</b> путь начинается с <code>/</code> и работает откуда угодно. <b>Относительный</b> — от текущей точки: <code>logs</code>, <code>../scripts</code>.</div>
+  <div class="trybox">▶ Повтори: <button class="try">pwd</button><button class="try">ls -la</button><button class="try">cd logs</button><button class="try">ls -lh</button><button class="try">cd ..</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="pwd"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Узнай, где ты находишься.</b> Одна команда из трёх букв.</p>
+    <details><summary>Подсказка</summary>«Print working directory».</details>
+    <details class="ans"><summary>Ответ</summary><code>pwd</code> → /home/devops</details></div>
+  <div class="task tterm" data-check="lsHidden"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Найди скрытый файл.</b> В домашней папке спрятан файл, который обычный <code>ls</code> не показывает. Выведи его на экран.</p>
+    <details><summary>Подсказка</summary>Флаг <b>a</b>ll.</details>
+    <details class="ans"><summary>Ответ</summary><code>ls -a</code> (или <code>ls -la</code>) → появится <code>.env</code>.</details></div>
+  <div class="task tterm" data-check="cdLogs"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Спустись в папку logs.</b> Проверь себя: приглашение терминала станет <code>:~/logs$</code>.</p>
+    <details class="ans"><summary>Ответ</summary><code>cd logs</code></details></div>
+  <div class="task tterm" data-check="cdHome"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Вернись домой из logs.</b> Сначала убедись, что ты в logs (предыдущее задание), потом вернись в <code>/home/devops</code>.</p>
+    <details><summary>Подсказка</summary>Три способа: этаж вверх, символ дома, или cd без аргумента.</details>
+    <details class="ans"><summary>Ответ</summary><code>cd ..</code> или <code>cd ~</code> или просто <code>cd</code>.</details></div>
+  <div class="task quiz" data-ok="2"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Что делает <code>cd</code> без аргументов?</p>
+    <div class="qopts"><button>Ошибку: не указано куда</button><button>Переходит в корень /</button><button>Возвращает домой (~)</button></div>
+    <div class="qx" hidden><code>cd</code> = <code>cd ~</code> — домой. Удобно, когда «заблудился».</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>Ты в <code>/home/devops/logs</code>. Куда приведёт <code>cd ../scripts</code>? А потом <code>cd ../..</code>?</p>
+    <details class="ans"><summary>Ответ</summary>Сначала <code>/home/devops/scripts</code> (вверх, потом вниз). Затем два этажа вверх → <code>/home</code>.</details></div>
+</section>
+
+<!-- ========== УРОК 2 ========== -->
+<section class="lesson" id="m2" data-num="02" data-short="Чтение файлов: cat · head · tail · wc">
+  <div class="lhead"><h2><span class="lnum">02</span>Смотрим файлы: cat, less, head, tail, wc</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <div class="etym"><span class="w">cat</span><span class="arr">→</span><span class="en">concatenate</span><span class="arr">→</span><span>«склеить» = вывалить всё содержимое на экран</span></div>
+  <p><code>cat notes.txt</code> — показать файл целиком; <code>cat a.txt b.txt</code> — склеить два подряд. Для огромных логов неудобен — всё пролетает мимо глаз. Тогда <code>less</code>: листай стрелками, <code>/слово</code> — поиск, <span class="kbd">q</span> — выход.</p>
+  <div class="etym"><span class="w">head</span><span class="arr">→</span><span class="en">head = голова</span><span class="arr">→</span><span>первые строки (по умолчанию 10)</span></div>
+  <div class="etym"><span class="w">tail</span><span class="arr">→</span><span class="en">tail = хвост</span><span class="arr">→</span><span>последние строки (по умолчанию 10)</span></div>
+  <p>Флаг <code>-n</code> (<b>n</b>umber — число) задаёт сколько: <code>head -n 3</code>. Можно короче: <code>head -3</code>.</p>
+  <span class="tag t-viz">👁 Визуализация — что вырежет head/tail (файл app.log)</span>
+  <pre><span class="g">2026-01-01 INFO Server started</span>      <span class="c">← head -n 3 берёт ЭТИ три</span>
+<span class="g">2026-01-01 WARN High memory</span>
+<span class="g">2026-01-01 ERROR Connection failed</span>
+2026-01-02 INFO Request ok
+<span class="y">2026-01-02 ERROR Timeout</span>            <span class="c">← tail -n 2 берёт ЭТИ две</span>
+<span class="y">2026-01-02 INFO Done</span></pre>
+  <div class="note">💡 <code>tail -f</code> (<b>f</b>ollow — «следуй») — любимая команда DevOps: смотрит, как лог растёт вживую. Остановить — <span class="kbd">Ctrl</span>+<span class="kbd">C</span>. В песочнице прилетят новые строки!</div>
+  <div class="etym"><span class="w">wc</span><span class="arr">→</span><span class="en">word count</span><span class="arr">→</span><span>«ворд каунт», счётчик слов. Но считает не только слова:</span></div>
+  <div class="tblwrap"><table>
+    <tr><th>Флаг</th><th>Буква от</th><th>Считает</th></tr>
+    <tr><td><code>-l</code></td><td><b>l</b>ines — строки</td><td>количество строк</td></tr>
+    <tr><td><code>-w</code></td><td><b>w</b>ords — слова</td><td>кусочки текста через пробелы</td></tr>
+    <tr><td><code>-c</code></td><td><b>c</b>ount of bytes</td><td>символы/байты</td></tr>
+  </table></div>
+  <p>Читаем целиком: <code>wc -l app.log</code> = «счётчик (<b>w</b>ord <b>c</b>ount), режим строк (<b>l</b>ines), файл app.log» → <b>сколько строк в app.log</b>. Без флагов wc выдаёт три числа: строки, слова, байты.</p>
+  <div class="trybox">▶ Повтори: <button class="try">cat logs/app.log</button><button class="try">head -n 3 logs/app.log</button><button class="try">wc -l logs/app.log</button><button class="try">tail -f logs/app.log</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="wcApp"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Посчитай строки в logs/app.log.</b> Должно получиться 6.</p>
+    <details><summary>Подсказка</summary>wc + флаг «lines» + путь к файлу.</details>
+    <details class="ans"><summary>Ответ</summary><code>wc -l logs/app.log</code></details></div>
+  <div class="task tterm" data-check="tail2"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Покажи ровно 2 последние строки app.log.</b> Ни больше, ни меньше.</p>
+    <details class="ans"><summary>Ответ</summary><code>tail -n 2 logs/app.log</code> (или <code>tail -2 logs/app.log</code>)</details></div>
+  <div class="task tterm" data-check="tailF"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Посмотри лог вживую.</b> Запусти слежение за app.log — и увидишь, как прилетят две новые строки.</p>
+    <details><summary>Подсказка</summary>Флаг follow.</details>
+    <details class="ans"><summary>Ответ</summary><code>tail -f logs/app.log</code></details></div>
+  <div class="task quiz" data-ok="0"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Сколько строк покажет <code>head file</code> без <code>-n</code>?</p>
+    <div class="qopts"><button>10</button><button>5</button><button>Все</button></div>
+    <div class="qx" hidden>И head, и tail по умолчанию — 10 строк. Все — это cat.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>Что выведет <code>wc -l servers.txt</code>? А <code>wc -w servers.txt</code>? (В файле 4 строки вида <code>web:prod:10.0.0.1</code>.)</p>
+    <details><summary>Подсказка</summary>Пробелов внутри строк нет — значит каждая строка это одно «слово».</details>
+    <details class="ans"><summary>Ответ</summary>Оба дадут 4: строк 4, и «слов» тоже 4 — разделителей-пробелов нет. Проверь в терминале!</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🐛 Найди ошибку</span></div>
+    <p>Хотели первые 5 строк, написали <code>tail -n 5 app.log</code>. Что не так?</p>
+    <details class="ans"><summary>Ответ</summary>tail — хвост, конец. Начало — это <code>head -n 5 app.log</code>.</details></div>
+</section>
+
+<!-- ========== УРОК 3 ========== -->
+<section class="lesson" id="m3" data-num="03" data-short="Пайпы и редиректы | > >>">
+  <div class="lhead"><h2><span class="lnum">03</span>Пайпы и редиректы — сердце Bash</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <p>У каждой команды есть <b>вход</b> (stdin) и <b>выход</b> (stdout). Обычно выход летит на экран, но его можно передать <b>следующей команде</b> или <b>в файл</b>. Это конвейер на заводе: деталь (текст) едет от станка к станку.</p>
+  <div class="etym"><span class="w">|</span><span class="arr">→</span><span class="en">pipe</span><span class="arr">→</span><span>«труба»: выход левой команды = вход правой</span></div>
+  <span class="tag t-viz">👁 Визуализация — нажми ▶ и посмотри, как данные текут</span>
+  <div class="pbtns"><button id="pipeRun">▶ Проиграть: cat app.log | grep ERROR | wc -l</button><button id="pipeReset" class="ghost">Сброс</button></div>
+  <div class="pipe">
+    <div class="pcol"><h4>cat logs/app.log</h4><div id="pipeSrc"></div></div>
+    <div class="parr">│</div>
+    <div class="pcol"><h4>grep ERROR</h4><div id="pipeFilter"></div><div style="color:var(--muted);font-size:10.5px;margin-top:5px">пропускает только ERROR</div></div>
+    <div class="parr">│</div>
+    <div class="pcol"><h4>wc -l</h4><div class="pcount" id="pipeCount">0</div><div style="color:var(--muted);font-size:10.5px;text-align:center">считает строки</div></div>
+  </div>
+  <div class="pstat" id="pipeStat">Нажми ▶ — увидишь, какие строки grep отбросит, а какие дойдут до счётчика.</div>
+  <div class="etym"><span class="w">&gt;</span><span class="arr">→</span><span class="en">redirect</span><span class="arr">→</span><span>перенаправить в файл (ПЕРЕЗАПИСАТЬ!)</span></div>
+  <div class="etym"><span class="w">&gt;&gt;</span><span class="arr">→</span><span class="en">append</span><span class="arr">→</span><span>дописать в конец (старое сохраняется)</span></div>
+  <pre><span class="c"># в notes.txt было 3 строки. Выполняем: echo "new" ...</span>
+<span class="r">&gt;</span>  notes.txt  →  в файле ОДНА строка "new"    <span class="r">(старые 3 стёрты!)</span>
+<span class="g">&gt;&gt;</span> notes.txt  →  4 строки: старые 3 + "new"  <span class="g">(дописали)</span></pre>
+  <div class="note danger">⚠️ <code>&gt;</code> стирает содержимое без вопросов и без корзины. Хочешь добавить — только <code>&gt;&gt;</code>.</div>
+  <div class="trybox">▶ Повтори: <button class="try">cat logs/app.log | grep ERROR | wc -l</button><button class="try">cat notes.txt</button><button class="try">echo "проверено" &gt;&gt; notes.txt</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="pipeErr"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Собери конвейер из трёх команд.</b> Получи число строк с ERROR в app.log: вывести → отфильтровать → посчитать. Две трубы <code>|</code>, ответ 2.</p>
+    <details><summary>Подсказка</summary>cat … | grep … | wc …</details>
+    <details class="ans"><summary>Ответ</summary><code>cat logs/app.log | grep ERROR | wc -l</code></details></div>
+  <div class="task tterm" data-check="errFile"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Сохрани ошибки в файл.</b> Создай <code>errors.txt</code>, где будут только строки с ERROR из app.log — без INFO и WARN.</p>
+    <details><summary>Подсказка</summary>grep умеет и сам читать файл, а <code>&gt;</code> сохранит вывод.</details>
+    <details class="ans"><summary>Ответ</summary><code>grep ERROR logs/app.log &gt; errors.txt</code>. Проверь: <code>cat errors.txt</code>.</details></div>
+  <div class="task tterm" data-check="appendNotes"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Допиши строку в notes.txt, не стирая старое.</b> В файле 3 строки (начинается с «todo»). Добавь любую свою — должно стать минимум 4, и «todo» обязано выжить.</p>
+    <details><summary>Подсказка</summary>Два знака «больше», не один.</details>
+    <details class="ans"><summary>Ответ</summary><code>echo "моя строка" &gt;&gt; notes.txt</code></details></div>
+  <div class="task quiz" data-ok="1"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Чем опасен <code>&gt;</code> по сравнению с <code>&gt;&gt;</code>?</p>
+    <div class="qopts"><button>Он медленнее работает</button><button>Он перезаписывает файл, стирая старое содержимое</button><button>Он создаёт скрытый файл</button></div>
+    <div class="qx" hidden><code>&gt;</code> = «начни файл заново», <code>&gt;&gt;</code> = «допиши в конец». Классическая авария: хотели дописать лог, а стёрли его.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>Что напечатает <code>head -n 2 servers.txt | wc -l</code>?</p>
+    <details class="ans"><summary>Ответ</summary>2: head отрезает 2 строки, wc считает уже их. Конвейер работает слева направо.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🐛 Найди ошибку</span></div>
+    <p>Команда <code>wc -l | logs/app.log</code> не работает. Что перепутали?</p>
+    <details class="ans"><summary>Ответ</summary><code>|</code> соединяет две команды, а справа — файл. Либо <code>wc -l logs/app.log</code>, либо <code>cat logs/app.log | wc -l</code>.</details></div>
+</section>
+
+<!-- ========== УРОК 4 ========== -->
+<section class="lesson" id="m4" data-num="04" data-short="grep — фильтр строк">
+  <div class="lhead"><h2><span class="lnum">04</span>grep — фильтр строк</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <div class="etym"><span class="w">grep</span><span class="arr">→</span><span class="en">global regular expression print</span><span class="arr">→</span><span>«напечатать строки, совпавшие с шаблоном»</span></div>
+  <p>Представь сито: высыпаешь текст — проваливаются <b>только строки с нужным словом</b>. Остальное исчезает. Это grep.</p>
+  <div class="anatomy">
+    <span class="part"><span class="cmd">grep</span><small>фильтруй</small></span>
+    <span class="part"><span class="flag">-i</span><small>ignore case<br>без регистра</small></span>
+    <span class="part"><span class="arg">"ERROR"</span><small>что ищем</small></span>
+    <span class="part"><span class="arg">app.log</span><small>где ищем</small></span>
+  </div>
+  <div class="tblwrap"><table>
+    <tr><th>Флаг</th><th>От слова</th><th>Что делает</th></tr>
+    <tr><td><code>-i</code></td><td><b>i</b>gnore case</td><td>ERROR = error = Error</td></tr>
+    <tr><td><code>-v</code></td><td>in<b>v</b>ert — наоборот</td><td>строки, где шаблона НЕТ</td></tr>
+    <tr><td><code>-c</code></td><td><b>c</b>ount — счёт</td><td>только число совпавших строк</td></tr>
+    <tr><td><code>-n</code></td><td><b>n</b>umber — номер</td><td>показать номера строк</td></tr>
+    <tr><td><code>-r</code></td><td><b>r</b>ecursive</td><td>искать во всех файлах папки</td></tr>
+    <tr><td><code>-E</code></td><td><b>E</b>xtended regex</td><td>«или»: <code>grep -E "ERROR|WARN"</code></td></tr>
+  </table></div>
+  <p>Мини-шаблоны: <code>^</code> — начало строки (<code>"^2026"</code>), <code>$</code> — конец (<code>"Done$"</code>), <code>.</code> — любой символ.</p>
+  <div class="trybox">▶ Повтори: <button class="try">grep ERROR logs/app.log</button><button class="try">grep -n ERROR logs/app.log</button><button class="try">grep -v INFO logs/app.log</button><button class="try">grep "^2026-01-02" logs/app.log</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="grepWarn"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Найди предупреждение.</b> Выведи строку с WARN из app.log.</p>
+    <details class="ans"><summary>Ответ</summary><code>grep WARN logs/app.log</code></details></div>
+  <div class="task tterm" data-check="grepC"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Посчитай ошибки одним grep.</b> Без wc и без самих строк — только число 2.</p>
+    <details><summary>Подсказка</summary>Флаг count.</details>
+    <details class="ans"><summary>Ответ</summary><code>grep -c ERROR logs/app.log</code></details></div>
+  <div class="task tterm" data-check="grepV"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Покажи всё, КРОМЕ скучного.</b> Выведи строки app.log без слова INFO — должно остаться 3 строки.</p>
+    <details><summary>Подсказка</summary>Флаг invert — «наоборот».</details>
+    <details class="ans"><summary>Ответ</summary><code>grep -v INFO logs/app.log</code></details></div>
+  <div class="task quiz" data-ok="2"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>В файле строки <code>Error</code> и <code>ERROR</code>. Что найдёт <code>grep ERROR file</code>?</p>
+    <div class="qopts"><button>Обе строки</button><button>Ни одной</button><button>Только ERROR — регистр важен</button></div>
+    <div class="qx" hidden>Без <code>-i</code> grep различает регистр. Обе найдёт <code>grep -i error</code>.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🐛 Найди ошибку</span></div>
+    <p>Хотели строки, начинающиеся с даты: <code>grep 2026-01-02$ logs/app.log</code> — пусто. Почему?</p>
+    <details class="ans"><summary>Ответ</summary><code>$</code> — «конец строки», а дата в начале. Нужно <code>grep "^2026-01-02" logs/app.log</code>.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧩 Собери</span></div>
+    <p>Строки с ERROR <b>или</b> WARN одной командой.</p>
+    <details class="ans"><summary>Ответ</summary><code>grep -E "ERROR|WARN" logs/app.log</code> → 3 строки. В песочнице сработает и без -E.</details></div>
+</section>
+
+<!-- ========== УРОК 5 ========== -->
+<section class="lesson" id="m5" data-num="05" data-short="sort · uniq · cut — колонки">
+  <div class="lhead"><h2><span class="lnum">05</span>sort, uniq, cut — конвейер обработки</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <div class="etym"><span class="w">sort</span><span class="arr">→</span><span class="en">sort</span><span class="arr">→</span><span>«сортировать» строки (по умолчанию по алфавиту)</span></div>
+  <div class="tblwrap"><table>
+    <tr><th>Флаг</th><th>От слова</th><th>Что делает</th></tr>
+    <tr><td><code>-r</code></td><td><b>r</b>everse</td><td>в обратную сторону</td></tr>
+    <tr><td><code>-n</code></td><td><b>n</b>umeric</td><td>как числа: 2 &lt; 10 (без него «10» &lt; «2»!)</td></tr>
+    <tr><td><code>-u</code></td><td><b>u</b>nique</td><td>сразу выбросить дубликаты</td></tr>
+  </table></div>
+  <div class="etym"><span class="w">uniq</span><span class="arr">→</span><span class="en">unique</span><span class="arr">→</span><span>«юник»: убирает повторы, стоящие ПОДРЯД</span></div>
+  <div class="note">⚠️ Главная ловушка: uniq видит только <b>соседние</b> дубли. «web, db, web» он не схлопнет. Поэтому всегда: <code>sort | uniq</code>. Флаг <code>-c</code> (<b>c</b>ount) добавит счётчик.</div>
+  <div class="etym"><span class="w">cut</span><span class="arr">→</span><span class="en">cut</span><span class="arr">→</span><span>«резать»: вырезать нужную колонку</span></div>
+  <span class="tag t-viz">👁 Визуализация — как cut видит строку</span>
+  <pre>строка:  web : prod : 10.0.0.1
+         <span class="g">-f 1</span>  <span class="y">-f 2</span>   <span class="cy">-f 3</span>      <span class="c">разделитель -d ":" (delimiter)</span>
+
+<span class="g">cut -d ":" -f 1</span> → web        <span class="c"># field 1: тип сервера</span>
+<span class="y">cut -d ":" -f 2</span> → prod       <span class="c"># field 2: среда</span>
+<span class="cy">cut -d ":" -f 3</span> → 10.0.0.1   <span class="c"># field 3: IP</span></pre>
+  <div class="trybox">▶ Повтори: <button class="try">sort servers.txt</button><button class="try">cut -d ":" -f 1 servers.txt</button><button class="try">cut -d ":" -f 1 servers.txt | sort | uniq -c</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="typesCount"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Сколько серверов каждого типа?</b> Тип — 1-я колонка servers.txt. Получи список со счётчиками: «1 cache, 1 db, 2 web». Три команды в конвейере.</p>
+    <details><summary>Подсказка</summary>вырезать → сгруппировать → посчитать повторы.</details>
+    <details class="ans"><summary>Ответ</summary><code>cut -d ":" -f 1 servers.txt | sort | uniq -c</code></details></div>
+  <div class="task tterm" data-check="envsUniq"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Уникальные среды по алфавиту.</b> 2-я колонка servers.txt: получи ровно <code>dev, prod, stage</code> — по одному разу, на отдельных строках.</p>
+    <details><summary>Подсказка</summary>cut → sort с флагом unique (или sort | uniq).</details>
+    <details class="ans"><summary>Ответ</summary><code>cut -d ":" -f 2 servers.txt | sort -u</code></details></div>
+  <div class="task quiz" data-ok="0"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Почему <code>uniq servers.txt</code> не убрал повтор «web»?</p>
+    <div class="qopts"><button>uniq убирает только соседние дубли — нужен sort перед ним</button><button>uniq сломан в новых версиях</button><button>web слишком короткое слово</button></div>
+    <div class="qx" hidden>Строки web разделены другими — uniq их не видит. Лечится: <code>sort | uniq</code>.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>Строки «10», «2», «33». Что даст <code>sort</code>, а что <code>sort -n</code>?</p>
+    <details class="ans"><summary>Ответ</summary>sort (по символам): 10, 2, 33. sort -n (по числам): 2, 10, 33. Для чисел всегда -n!</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧠 Сценарий</span></div>
+    <p>Найди самый частый IP (3-я колонка): цепочка из cut / sort / uniq / sort / head?</p>
+    <details><summary>Подсказка</summary>вырезать → сгруппировать → посчитать → по убыванию числа → первый.</details>
+    <details class="ans"><summary>Ответ</summary><code>cut -d ":" -f 3 servers.txt | sort | uniq -c | sort -nr | head -n 1</code> — классика собеседований!</details></div>
+</section>
+
+<!-- ========== УРОК 6 ========== -->
+<section class="lesson" id="m6" data-num="06" data-short="awk · sed — первое знакомство">
+  <div class="lhead"><h2><span class="lnum">06</span>awk и sed — тяжёлая артиллерия</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <div class="etym"><span class="w">awk</span><span class="arr">→</span><span class="en">Aho, Weinberger, Kernighan</span><span class="arr">→</span><span>фамилии авторов. Язык для колонок</span></div>
+  <p>awk сам режет строку на колонки и называет их <code>$1</code>, <code>$2</code>… («доллар один» — первая). <code>$0</code> — вся строка. Программа в <code>{ }</code> выполняется для каждой строки.</p>
+  <pre><span class="g">awk '{print $1}' servers.txt</span>        <span class="c"># 1-е слово каждой строки</span>
+<span class="g">awk -F ":" '{print $2}' servers.txt</span> <span class="c"># -F = Field separator → среды</span>
+<span class="g">awk '/ERROR/ {print $1}' logs/app.log</span> <span class="c"># /ERROR/ = фильтр, печатаем дату</span></pre>
+  <div class="note">💡 awk ≈ cut, но умеет больше: фильтры <code>/.../</code>, суммы, условия. <code>awk -F ":"</code> ≈ <code>cut -d ":"</code>.</div>
+  <div class="etym"><span class="w">sed</span><span class="arr">→</span><span class="en">stream editor</span><span class="arr">→</span><span>«стрим эдитор»: меняет текст на лету</span></div>
+  <p>Главная команда — замена <code>s/что/на что/</code>: <code>s</code> = <b>s</b>ubstitute («подставить»), флаг <code>g</code> = <b>g</b>lobal — все вхождения в строке, не только первое.</p>
+  <pre><span class="g">sed 's/prod/PRODUCTION/' servers.txt</span>  <span class="c"># замена В ВЫВОДЕ (файл не тронут!)</span>
+<span class="g">sed 's/:/ | /g' servers.txt</span>           <span class="c"># все двоеточия → " | "</span>
+<span class="g">sed -i 's/ERROR/OK/g' logs/app.log</span>    <span class="c"># -i = in-place: меняет САМ файл</span></pre>
+  <div class="trybox">▶ Повтори: <button class="try">awk -F ":" '{print $2}' servers.txt</button><button class="try">awk '/ERROR/ {print $1}' logs/app.log</button><button class="try">sed 's/prod/PRODUCTION/g' servers.txt</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="awkEnv"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Достань среды через awk.</b> Выведи 2-ю колонку servers.txt (разделитель <code>:</code>) — увидишь prod, prod, stage, dev.</p>
+    <details><summary>Подсказка</summary>-F задаёт разделитель, $2 — вторая колонка.</details>
+    <details class="ans"><summary>Ответ</summary><code>awk -F ":" '{print $2}' servers.txt</code></details></div>
+  <div class="task tterm" data-check="sedProd"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Переименуй среду на лету.</b> Выведи servers.txt так, чтобы вместо <code>prod</code> было <code>PRODUCTION</code>. Сам файл не меняй.</p>
+    <details><summary>Подсказка</summary>s/старое/новое/</details>
+    <details class="ans"><summary>Ответ</summary><code>sed 's/prod/PRODUCTION/g' servers.txt</code></details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>Что напечатает <code>awk '/ERROR/ {print $1}' logs/app.log</code>?</p>
+    <details><summary>Подсказка</summary>Фильтр оставит 2 строки с ошибками; $1 — первое слово (по пробелу) — дата.</details>
+    <details class="ans"><summary>Ответ</summary>2026-01-01 и 2026-01-02 — даты двух ошибок. Проверь в терминале!</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧩 Вставь пропуск</span></div>
+    <p>Заменить все <code>web</code> на <code>frontend</code>: <code>sed 's/web/frontend/___' servers.txt</code></p>
+    <details class="ans"><summary>Ответ</summary>Флаг <code>g</code>. Без него — только первое вхождение в каждой строке.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🐛 Найди ошибку</span></div>
+    <p>Выполнили <code>sed 's/ERROR/OK/g' logs/app.log</code>, открыли файл — ERROR всё ещё там. Почему?</p>
+    <details class="ans"><summary>Ответ</summary>sed изменил только вывод. Файл меняет <code>-i</code> (in-place): <code>sed -i 's/ERROR/OK/g' logs/app.log</code>.</details></div>
+</section>
+
+<!-- ========== УРОК 7 ========== -->
+<section class="lesson" id="m7" data-num="07" data-short="Файлы: touch · mkdir · cp · mv · rm">
+  <div class="lhead"><h2><span class="lnum">07</span>Файловые операции: touch, mkdir, cp, mv, rm</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <div class="etym"><span class="w">touch</span><span class="arr">→</span><span class="en">«потрогать»</span><span class="arr">→</span><span>создать пустой файл (если нет)</span></div>
+  <div class="etym"><span class="w">mkdir</span><span class="arr">→</span><span class="en">make directory</span><span class="arr">→</span><span>создать папку; <code>-p</code> = parents, всю цепочку</span></div>
+  <div class="etym"><span class="w">cp</span><span class="arr">→</span><span class="en">copy</span><span class="arr">→</span><span>копия: оригинал остаётся</span></div>
+  <div class="etym"><span class="w">mv</span><span class="arr">→</span><span class="en">move</span><span class="arr">→</span><span>перенос: оригинал исчезает; им же переименовывают</span></div>
+  <div class="etym"><span class="w">rm</span><span class="arr">→</span><span class="en">remove</span><span class="arr">→</span><span>удалить НАВСЕГДА: корзины нет!</span></div>
+  <pre><span class="g">touch report.txt</span>          <span class="c"># пустой файл</span>
+<span class="g">mkdir -p backup/2026/nov</span>  <span class="c"># -p создаст все три уровня</span>
+<span class="g">cp notes.txt notes.bak</span>    <span class="c"># теперь два файла</span>
+<span class="g">mv notes.bak backup/</span>      <span class="c"># перенести в папку</span>
+<span class="g">mv report.txt otchet.txt</span>  <span class="c"># переименование = mv</span>
+<span class="g">rm -r backup/</span>             <span class="c"># -r = recursive: папку со всем содержимым</span></pre>
+  <div class="note danger">☠️ <code>rm -rf /</code> — команда-убийца: <code>-f</code> (force) отключает вопросы. Проверяй путь дважды. В песочнице корень защищён — в жизни защиты нет.</div>
+  <span class="tag t-practice">✏️ Практика — мини-квест из трёх шагов</span>
+  <div class="task tterm" data-check="backupCopy"><div class="thead"><span class="kind">⌨ В терминале · шаг 1</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Сделай бэкап.</b> Создай папку <code>backup</code> и скопируй в неё <code>servers.txt</code>.</p>
+    <details><summary>Подсказка</summary>Две команды: mkdir, потом cp файл папка/</details>
+    <details class="ans"><summary>Ответ</summary><code>mkdir backup</code>, затем <code>cp servers.txt backup/</code></details></div>
+  <div class="task tterm" data-check="renameOld"><div class="thead"><span class="kind">⌨ В терминале · шаг 2</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Переименуй копию.</b> Пусть в backup лежит <code>servers.old</code> вместо <code>servers.txt</code>.</p>
+    <details><summary>Подсказка</summary>Переименование — это mv куда-то… в то же место.</details>
+    <details class="ans"><summary>Ответ</summary><code>mv backup/servers.txt backup/servers.old</code></details></div>
+  <div class="task tterm" data-check="rmBackup"><div class="thead"><span class="kind">⌨ В терминале · шаг 3</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Убери за собой.</b> Удали папку backup целиком. Без нужного флага получишь «Is a directory».</p>
+    <details class="ans"><summary>Ответ</summary><code>rm -r backup</code></details></div>
+  <div class="task quiz" data-ok="1"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Что делает <code>rm -rf папка</code>?</p>
+    <div class="qopts"><button>Ускоряет удаление в 2 раза</button><button>Рекурсивно удаляет папку со всем содержимым, без вопросов, навсегда</button><button>Создаёт архив папки</button></div>
+    <div class="qx" hidden>r = recursive (вглубь), f = force (без подтверждений). Корзины нет. Самая опасная комбинация в Linux.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>После <code>cp a.txt b.txt</code> и <code>mv a.txt c.txt</code> — сколько файлов и с какими именами?</p>
+    <details class="ans"><summary>Ответ</summary>Два: b.txt (копия) и c.txt (бывший a.txt). Оригинал исчез — mv переносит.</details></div>
+</section>
+
+<!-- ========== УРОК 8 ========== -->
+<section class="lesson" id="m8" data-num="08" data-short="find · which — поиск файлов">
+  <div class="lhead"><h2><span class="lnum">08</span>find и which — ищем сами файлы</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <div class="etym"><span class="w">find</span><span class="arr">→</span><span class="en">find = «найти»</span><span class="arr">→</span><span>ищет ФАЙЛЫ по имени/типу, не текст внутри!</span></div>
+  <p>Не путай: <b>grep</b> ищет текст <b>внутри</b> файлов, <b>find</b> — <b>сами файлы</b> в дереве. «Найди все .log» — find. «Найди строки ERROR» — grep.</p>
+  <div class="anatomy">
+    <span class="part"><span class="cmd">find</span><small>ищи</small></span>
+    <span class="part"><span class="arg">.</span><small>откуда<br>(точка = отсюда)</small></span>
+    <span class="part"><span class="flag">-name</span><small>по имени</small></span>
+    <span class="part"><span class="arg">"*.log"</span><small>шаблон</small></span>
+  </div>
+  <p><code>*</code> («звёздочка») = любое количество любых символов. Кавычки нужны, чтобы звёздочку не раскрыл сам bash. <code>-type d</code> — только папки (<b>d</b>irectory), <code>-type f</code> — файлы (<b>f</b>ile).</p>
+  <div class="etym"><span class="w">which</span><span class="arr">→</span><span class="en">which = «который/где»</span><span class="arr">→</span><span>откуда запускается команда: <code>which bash</code> → /usr/bin/bash</span></div>
+  <div class="trybox">▶ Повтори: <button class="try">find . -name "*.log"</button><button class="try">find . -type d</button><button class="try">which grep</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="findLogs"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Найди все логи.</b> Одним find от текущей папки отыщи оба .log файла.</p>
+    <details class="ans"><summary>Ответ</summary><code>find . -name "*.log"</code></details></div>
+  <div class="task tterm" data-check="findDirs"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Покажи только папки.</b> Никаких файлов в выводе — лишь директории.</p>
+    <details><summary>Подсказка</summary>-type + буква слова directory.</details>
+    <details class="ans"><summary>Ответ</summary><code>find . -type d</code></details></div>
+  <div class="task tterm" data-check="whichGrep"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Где живёт grep?</b> Узнай полный путь к исполняемому файлу команды grep.</p>
+    <details class="ans"><summary>Ответ</summary><code>which grep</code> → /usr/bin/grep</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🐛 Найди ошибку</span></div>
+    <p>Ищут слово ERROR внутри логов командой <code>find . -name ERROR</code>. Почему пусто?</p>
+    <details class="ans"><summary>Ответ</summary>find ищет файлы с ИМЕНЕМ «ERROR». Текст внутри ищет grep.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧠 Сценарий (интервью)</span></div>
+    <p>«Найти все .log и посчитать строки в каждом» — какая идея с find?</p>
+    <details><summary>Подсказка</summary>find умеет выполнять команду для каждого найденного: <code>-exec команда {} \;</code></details>
+    <details class="ans"><summary>Ответ</summary><code>find . -name "*.log" -exec wc -l {} \;</code> — {} подставляет найденный файл. Interview-классика.</details></div>
+</section>
+
+<!-- ========== УРОК 9 ========== -->
+<section class="lesson" id="m9" data-num="09" data-short="chmod — права доступа">
+  <div class="lhead"><h2><span class="lnum">09</span>chmod — права доступа</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <div class="etym"><span class="w">chmod</span><span class="arr">→</span><span class="en">change mode</span><span class="arr">→</span><span>«сменить режим» = кому что можно</span></div>
+  <p>Права — как бейдж-пропуск: у трёх групп свой доступ. <b>owner</b> (владелец), <b>group</b> (группа), <b>others</b> (остальные).</p>
+  <pre><span class="p">-</span><span class="g">rwx</span><span class="cy">r-x</span><span class="y">r--</span>
+<span class="p">│</span><span class="g">└┬┘</span><span class="cy">└┬┘</span><span class="y">└┬┘</span>
+<span class="p">│</span> <span class="g">│</span>  <span class="cy">│</span>  <span class="y">└─ others: r-- → только читать</span>
+<span class="p">│</span> <span class="g">│</span>  <span class="cy">└──── group:  r-x → читать + выполнять</span>
+<span class="p">│</span> <span class="g">└─────── owner:  rwx → всё</span>
+<span class="p">└───────── тип: - файл, d папка</span></pre>
+  <div class="tblwrap"><table>
+    <tr><th>Буква</th><th>От слова</th><th>Разрешает</th><th>Число</th></tr>
+    <tr><td><code>r</code></td><td><b>r</b>ead — читать</td><td>смотреть содержимое</td><td>4</td></tr>
+    <tr><td><code>w</code></td><td><b>w</b>rite — писать</td><td>менять/стирать</td><td>2</td></tr>
+    <tr><td><code>x</code></td><td>e<b>x</b>ecute — выполнять</td><td>запускать как программу</td><td>1</td></tr>
+  </table></div>
+  <p><b>Числовой режим</b> — сумма: rwx=7, r-x=5, rw-=6, r--=4. Три цифры = три группы. Пощёлкай тумблеры:</p>
+  <span class="tag t-viz">👁 Интерактив — собери права, получи chmod</span>
+  <div class="rwx">
+    <div class="rwxgrid">
+      <span></span><span style="color:var(--muted);text-align:center">r·4</span><span style="color:var(--muted);text-align:center">w·2</span><span style="color:var(--muted);text-align:center">x·1</span>
+      <span class="who">owner</span><button data-i="0" aria-pressed="true">r</button><button data-i="1" aria-pressed="true">w</button><button data-i="2" aria-pressed="true">x</button>
+      <span class="who">group</span><button data-i="3" aria-pressed="true">r</button><button data-i="4" aria-pressed="false">w</button><button data-i="5" aria-pressed="true">x</button>
+      <span class="who">others</span><button data-i="6" aria-pressed="true">r</button><button data-i="7" aria-pressed="false">w</button><button data-i="8" aria-pressed="true">x</button>
+    </div>
+    <div class="rwxout"><span class="sym" id="rwxSym">-rwxr-xr-x</span><span class="num" id="rwxNum">755</span><span class="cmd" id="rwxCmd">chmod 755 deploy.sh</span><button class="copybtn" id="rwxCopy">копировать</button></div>
+    <div class="rwxpresets"><span style="color:var(--muted);font-size:11.5px">пресеты:</span><button data-set="755">755 скрипт</button><button data-set="644">644 файл</button><button data-set="600">600 секрет</button><button data-set="777">777 всем всё</button></div>
+  </div>
+  <div class="trybox">▶ История в 4 шага: <button class="try">./scripts/deploy.sh</button><span style="color:var(--muted)">← отказ!</span> <button class="try">ls -l scripts</button> <button class="try">chmod +x scripts/deploy.sh</button> <button class="try">./scripts/deploy.sh</button><span style="color:var(--muted)">← работает 🎉</span></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="fixDeploy"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Почини деплой.</b> Скрипт <code>scripts/deploy.sh</code> не запускается (Permission denied). Дай ему право на выполнение и запусти — должен напечатать «Deploy done».</p>
+    <details><summary>Подсказка</summary>chmod +x путь, затем ./путь</details>
+    <details class="ans"><summary>Ответ</summary><code>chmod +x scripts/deploy.sh</code>, затем <code>./scripts/deploy.sh</code></details></div>
+  <div class="task tterm" data-check="env600"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Запри секрет.</b> Файл <code>.env</code> сейчас могут читать все (644). Сделай так, чтобы читать/писать мог ТОЛЬКО владелец.</p>
+    <details><summary>Подсказка</summary>rw- --- --- = 6,0,0. Проверь потом: ls -la</details>
+    <details class="ans"><summary>Ответ</summary><code>chmod 600 .env</code></details></div>
+  <div class="task quiz" data-ok="0"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Файл с паролями. Какой режим?</p>
+    <div class="qopts"><button>600 — только владелец</button><button>777 — всем всё</button><button>644 — все читают</button></div>
+    <div class="qx" hidden>600 = rw- --- ---. 777 — дыра, 644 даст прочитать пароль всем.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>Расшифруй <code>640</code> по буквам для трёх групп.</p>
+    <details class="ans"><summary>Ответ</summary><code>rw-r-----</code>: владелец читает+пишет, группа читает, остальные — ничего.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧠 Сценарий</span></div>
+    <p>Почему <code>chmod 777</code> на проде — плохо, даже если «зато работает»?</p>
+    <details class="ans"><summary>Ответ</summary>Любой пользователь/процесс сможет подменить файл. Правило минимальных прав: только необходимое (755/644/600).</details></div>
+</section>
+
+<!-- ========== УРОК 10 ========== -->
+<section class="lesson" id="m10" data-num="10" data-short="Процессы и порты: ps · ss · kill">
+  <div class="lhead"><h2><span class="lnum">10</span>Процессы и порты: ps, ss, lsof, kill</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <p><b>Процесс</b> — запущенная программа. Каждый получает номерок, как в гардеробе — <b>PID</b> (<b>P</b>rocess <b>ID</b>). А сетевые программы ещё и «занимают» <b>порт</b> — номер двери, по которой к ним стучатся клиенты (веб — 80/443, node-приложения часто — 8080).</p>
+  <div class="etym"><span class="w">ps</span><span class="arr">→</span><span class="en">process status</span><span class="arr">→</span><span>фотография списка процессов</span></div>
+  <div class="etym"><span class="w">ss</span><span class="arr">→</span><span class="en">socket statistics</span><span class="arr">→</span><span>«статистика сокетов»: кто какие порты слушает</span></div>
+  <div class="etym"><span class="w">lsof</span><span class="arr">→</span><span class="en">list open files</span><span class="arr">→</span><span>«список открытых файлов» (в Linux всё есть файл, даже порт!)</span></div>
+  <div class="etym"><span class="w">kill</span><span class="arr">→</span><span class="en">«убить»</span><span class="arr">→</span><span>на деле «послать сигнал» процессу по PID</span></div>
+  <span class="tag t-viz">👁 Визуализация — читаем ss -tulpn</span>
+  <pre><span class="c"># -t tcp  -u udp  -l listening (слушающие)  -p process (кто)  -n numeric (цифрами)</span>
+Local Address:<span class="y">Port</span>   Process
+0.0.0.0:<span class="y">22</span>          users:(("sshd",pid=<span class="g">640</span>))     <span class="c"># SSH</span>
+0.0.0.0:<span class="y">80</span>          users:(("nginx",pid=<span class="g">812</span>))    <span class="c"># веб</span>
+0.0.0.0:<span class="y">8080</span>        users:(("node",pid=<span class="g">1204</span>))    <span class="c"># ← кто занял 8080? node!</span>
+
+<span class="c"># точечный вопрос «кто на порту 8080?»:</span>
+<span class="g">lsof -i :8080</span>       <span class="c"># -i = internet: сразу имя процесса и PID</span></pre>
+  <pre><span class="g">ps aux</span>               <span class="c"># все процессы подробно</span>
+<span class="g">ps aux | grep node</span>   <span class="c"># найти конкретный</span>
+<span class="g">kill 1204</span>            <span class="c"># TERM (15): «пожалуйста, завершись»</span>
+<span class="g">kill -9 1204</span>         <span class="c"># KILL (9): немедленно, без сохранения</span></pre>
+  <div class="note">💡 Всегда начинай с мягкого <code>kill PID</code>. <code>-9</code> — крайняя мера. После kill порт освобождается — проверь тем же ss!</div>
+  <div class="trybox">▶ Повтори: <button class="try">ps aux</button><button class="try">ss -tulpn</button><button class="try">lsof -i :8080</button></div>
+  <span class="tag t-practice">✏️ Практика — расследование в 3 шага</span>
+  <div class="task tterm" data-check="port8080"><div class="thead"><span class="kind">⌨ В терминале · шаг 1</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Выясни, какой процесс занимает порт 8080.</b> Нужно имя и PID. Подойдёт <code>ss</code>, <code>netstat</code> или <code>lsof</code>.</p>
+    <details><summary>Подсказка</summary>ss -tulpn покажет всех; lsof -i :8080 — точечно.</details>
+    <details class="ans"><summary>Ответ</summary><code>ss -tulpn</code> или <code>lsof -i :8080</code> → node, PID 1204.</details></div>
+  <div class="task tterm" data-check="freePort"><div class="thead"><span class="kind">⌨ В терминале · шаг 2</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Освободи порт 8080.</b> Вежливо заверши виновника по его PID.</p>
+    <details><summary>Подсказка</summary>kill + номер из шага 1. Без -9 — сначала пробуем мягко.</details>
+    <details class="ans"><summary>Ответ</summary><code>kill 1204</code></details></div>
+  <div class="task tterm" data-check="portGone"><div class="thead"><span class="kind">⌨ В терминале · шаг 3</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Убедись, что порт свободен.</b> Повтори проверку портов — 8080 больше не должен фигурировать.</p>
+    <details class="ans"><summary>Ответ</summary><code>ss -tulpn</code> (строки с 8080 нет) или <code>lsof -i :8080</code> → пусто.</details></div>
+  <div class="task quiz" data-ok="1"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Чем <code>kill -9</code> отличается от <code>kill</code>?</p>
+    <div class="qopts"><button>-9 убивает 9 процессов сразу</button><button>-9 — жёсткий KILL без шанса сохраниться; обычный — вежливый TERM</button><button>Ничем, синонимы</button></div>
+    <div class="qx" hidden>Число — номер сигнала: TERM=15 (по умолчанию), KILL=9. Начинают с TERM.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧠 Сценарий</span></div>
+    <p>Сервер тормозит. Порядок действий: чем посмотреть, кто ест ресурсы, и что дальше?</p>
+    <details class="ans"><summary>Ответ</summary>1) <code>top</code> — самый прожорливый + PID. 2) <code>ps aux | grep имя</code> — уточнить. 3) <code>kill PID</code>; завис намертво — <code>kill -9 PID</code>.</details></div>
+</section>
+
+<!-- ========== УРОК 11 ========== -->
+<section class="lesson" id="m11" data-num="11" data-short="Ресурсы: df · du · free">
+  <div class="lhead"><h2><span class="lnum">11</span>Ресурсы: df, du, free</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <p>Аналогия: <b>диск</b> — шкаф (хранит долго), <b>RAM</b> — рабочий стол (быстрый, при выключении пустеет). Три команды — три разных вопроса:</p>
+  <div class="etym"><span class="w">df</span><span class="arr">→</span><span class="en">disk free</span><span class="arr">→</span><span>«сколько свободно на дисках целиком?»</span></div>
+  <div class="etym"><span class="w">du</span><span class="arr">→</span><span class="en">disk usage</span><span class="arr">→</span><span>«сколько весит эта папка?»</span></div>
+  <div class="etym"><span class="w">free</span><span class="arr">→</span><span class="en">«свободно»</span><span class="arr">→</span><span>«сколько оперативной памяти?»</span></div>
+  <pre><span class="g">df -h</span>          <span class="c"># -h human: гигабайты; столбец Use% — заполненность</span>
+<span class="g">du -sh logs/</span>   <span class="c"># -s summary (один итог), -h human → вес папки</span>
+<span class="g">free -h</span>        <span class="c"># Mem (RAM) и Swap; смотри столбец available!</span></pre>
+  <div class="note">💡 Расследование «диск кончился»: <code>df -h</code> (какой раздел полон) → <code>du -sh</code> по папкам (кто весит) → чистим найденное.</div>
+  <div class="trybox">▶ Повтори: <button class="try">df -h</button><button class="try">du -sh logs</button><button class="try">free -h</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="dfH"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Проверь заполненность дисков.</b> В понятных гигабайтах. Найди, насколько заполнен корневой раздел (Use%).</p>
+    <details class="ans"><summary>Ответ</summary><code>df -h</code> → / заполнен на 70%.</details></div>
+  <div class="task tterm" data-check="duLogs"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Взвесь папку logs.</b> Один итоговый размер, по-человечески.</p>
+    <details><summary>Подсказка</summary>du + summary + human.</details>
+    <details class="ans"><summary>Ответ</summary><code>du -sh logs</code></details></div>
+  <div class="task quiz" data-ok="1"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Что показывает <code>free -h</code>?</p>
+    <div class="qopts"><button>Свободное место на диске</button><button>Оперативную память (RAM)</button><button>Загрузку процессора</button></div>
+    <div class="qx" hidden>free — про RAM. Диск — df/du. CPU — top.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧠 Сценарий</span></div>
+    <p>Алерт: «disk usage 95% на /». Первые две команды?</p>
+    <details class="ans"><summary>Ответ</summary><code>df -h</code> — подтвердить; затем <code>du -sh</code> по подозрительным папкам (часто /var/log) — найти пожирателя.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🐛 Найди ошибку</span></div>
+    <p>Джун видит «free 1.2Gi» и паникует, что памяти мало. Почему рано паниковать?</p>
+    <details class="ans"><summary>Ответ</summary>Linux отдаёт свободную память под кэш и мгновенно вернёт её приложениям. Смотреть надо столбец <b>available</b>.</details></div>
+</section>
+
+<!-- ========== УРОК 12 ========== -->
+<section class="lesson" id="m12" data-num="12" data-short="Сеть: curl · ping">
+  <div class="lhead"><h2><span class="lnum">12</span>Сеть: curl и ping</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <div class="etym"><span class="w">curl</span><span class="arr">→</span><span class="en">client for URL</span><span class="arr">→</span><span>браузер без картинки: сходить по адресу, принести ответ</span></div>
+  <div class="tblwrap"><table>
+    <tr><th>Флаг</th><th>От слова</th><th>Что делает</th></tr>
+    <tr><td><code>-I</code></td><td>HEAD-запрос</td><td>только заголовки: статус-код, сервер</td></tr>
+    <tr><td><code>-s</code></td><td><b>s</b>ilent — тихий</td><td>убрать прогресс-бар (для скриптов)</td></tr>
+    <tr><td><code>-o файл</code></td><td><b>o</b>utput</td><td>сохранить ответ в файл</td></tr>
+  </table></div>
+  <p>Коды ответа: <b>200</b> OK — жив; <b>404</b> — нет страницы; <b>500</b> — ошибка сервера; <b>502/503</b> — сервис за прокси лежит.</p>
+  <div class="etym"><span class="w">ping</span><span class="arr">→</span><span class="en">звук сонара</span><span class="arr">→</span><span>«достучаться ли до хоста?» — проверяет СЕТЬ, не приложение</span></div>
+  <div class="note">💡 ping отвечает ≠ сервис жив: машина пингуется, а nginx на ней может лежать. Уровни: <code>ping</code> (сеть) → <code>curl -I</code> (HTTP-сервис).</div>
+  <div class="trybox">▶ Повтори: <button class="try">curl -I http://localhost:8080/health</button><button class="try">curl http://localhost:8080/health</button><button class="try">ping db01</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="curlI"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Healthcheck после деплоя.</b> Проверь <code>http://localhost:8080/health</code>, посмотрев ТОЛЬКО заголовки. Убедись: 200 OK.</p>
+    <details><summary>Подсказка</summary>Заглавная буква I.</details>
+    <details class="ans"><summary>Ответ</summary><code>curl -I http://localhost:8080/health</code></details></div>
+  <div class="task tterm" data-check="respFile"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Скачай ответ в файл.</b> Тихо сохрани тело health-ответа в <code>resp.json</code>. Потом глянь: <code>cat resp.json</code>.</p>
+    <details><summary>Подсказка</summary>-s (тихо) и -o (файл).</details>
+    <details class="ans"><summary>Ответ</summary><code>curl -s -o resp.json http://localhost:8080/health</code></details></div>
+  <div class="task quiz" data-ok="1"><div class="thead"><span class="kind">⚡ Блиц</span></div><p><code>ping</code> проходит, а <code>curl -I</code> даёт 502. Что это значит?</p>
+    <div class="qopts"><button>Сервис точно жив, curl врёт</button><button>Сеть до машины есть, но приложение за прокси лежит</button><button>Интернет отключился</button></div>
+    <div class="qx" hidden>ping — уровень сети, curl — уровень приложения. 502: прокси жив, backend — нет. Смотри ps и логи.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧩 Вставь пропуск</span></div>
+    <p>Только заголовки, без тела: <code>curl -___ http://site</code></p>
+    <details class="ans"><summary>Ответ</summary>Заглавная <code>-I</code>.</details></div>
+</section>
+
+<!-- ========== УРОК 13 ========== -->
+<section class="lesson" id="m13" data-num="13" data-short="Bash: переменные · циклы · &&">
+  <div class="lhead"><h2><span class="lnum">13</span>Bash: переменные, циклы, условия</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <span class="tag t-theory">📖 Теория</span>
+  <p><b>Переменная</b> — подписанная коробка со значением. Кладём: <code>NAME="web01"</code> (без пробелов вокруг <code>=</code>!). Достаём: <code>$NAME</code> — «подставь значение».</p>
+  <pre><span class="g">NAME="web01"</span>
+<span class="g">echo $NAME</span>             <span class="c"># → web01</span>
+<span class="g">echo "Сервер: $NAME"</span>   <span class="c"># двойные кавычки подставляют</span>
+<span class="g">echo '$NAME'</span>           <span class="c"># одинарные — печатают буквально $NAME</span></pre>
+  <div class="note">⚠️ <code>NAME = "web01"</code> — ошибка! Bash решит, что NAME — команда. Вокруг <code>=</code> пробелов нет.</div>
+  <span class="tag t-viz">👁 Визуализация — цикл for по шагам</span>
+  <pre><span class="g">for</span> server <span class="g">in</span> web db cache; <span class="g">do</span>
+  echo "Проверяю $server"
+<span class="g">done</span>
+
+шаг 1: server=<span class="y">web</span>   → «Проверяю web»
+шаг 2: server=<span class="y">db</span>    → «Проверяю db»
+шаг 3: server=<span class="y">cache</span> → «Проверяю cache»</pre>
+  <p>«<b>Для каждого</b> server <b>из списка</b> … <b>делай</b> … <b>готово</b>». <code>fi</code> — это if наоборот, конец условия.</p>
+  <pre><span class="g">mkdir backup</span> &amp;&amp; <span class="g">cp notes.txt backup/</span>   <span class="c"># && = «и если успешно»</span>
+<span class="g">curl -s http://api/health</span> || <span class="g">echo "лежит!"</span> <span class="c"># || = «или иначе»</span></pre>
+  <p>Каждая команда возвращает <b>код выхода</b>: 0 = успех, не-0 = ошибка (<code>echo $?</code> покажет). На этом работают <code>&amp;&amp;</code> и <code>||</code>. В песочнице есть команды <code>true</code> (всегда 0) и <code>false</code> (всегда ошибка) — потренируйся.</p>
+  <div class="trybox">▶ Повтори: <button class="try">FILE=logs/app.log</button><button class="try">wc -l $FILE</button><button class="try">false || echo "сработал план Б"</button></div>
+  <span class="tag t-practice">✏️ Практика</span>
+  <div class="task tterm" data-check="varWc"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Посчитай строки через переменную.</b> Присвой <code>FILE=logs/app.log</code>, затем выполни <code>wc -l $FILE</code> — должно выйти 6.</p>
+    <details><summary>Подсказка</summary>Две команды по очереди.Dollar знак обязателен при чтении.</details>
+    <details class="ans"><summary>Ответ</summary><code>FILE=logs/app.log</code>, затем <code>wc -l $FILE</code></details></div>
+  <div class="task tterm" data-check="echoVar"><div class="thead"><span class="kind">⌨ В терминале</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Подставь переменную в текст.</b> Присвой <code>NAME=web01</code> и напечатай «Сервер: web01» через <code>echo</code> с <code>$NAME</code> в двойных кавычках.</p>
+    <details class="ans"><summary>Ответ</summary><code>NAME=web01</code>, затем <code>echo "Сервер: $NAME"</code></details></div>
+  <div class="task quiz" data-ok="2"><div class="thead"><span class="kind">⚡ Блиц</span></div><p>Что значит код выхода 0?</p>
+    <div class="qopts"><button>Ошибка</button><button>Ноль результатов найдено</button><button>Успех</button></div>
+    <div class="qx" hidden>0 = успех. Поэтому && продолжает после нуля, || — после ненулевого.</div>
+    <button class="qretry" hidden>Попробовать снова</button></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🐛 Найди ошибку</span></div>
+    <p>Почему <code>PORT = 8080</code> — ошибка, а <code>PORT=8080</code> — нет?</p>
+    <details class="ans"><summary>Ответ</summary>С пробелами bash видит команду «PORT» с аргументами. Присваивание — слитно.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p>Что напечатает <code>for i in 1 2 3; do echo "n$i"; done</code>?</p>
+    <details class="ans"><summary>Ответ</summary>n1, n2, n3 — по строке на каждый элемент.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🔮 Предскажи</span></div>
+    <p><code>NAME=web</code>: чем отличается <code>echo '$NAME'</code> от <code>echo "$NAME"</code>?</p>
+    <details class="ans"><summary>Ответ</summary>Одинарные напечатают буквально <code>$NAME</code>, двойные подставят → <code>web</code>.</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧠 Сценарий</span></div>
+    <p>Цикл: для каждого из web db cache напечатать «ping $s».</p>
+    <details class="ans"><summary>Ответ</summary><pre>for s in web db cache; do
+  echo "ping $s"
+done</pre></details></div>
+</section>
+
+<!-- ========== УРОК 14 ========== -->
+<section class="lesson" id="m14" data-num="14" data-short="🏆 Финал: боевые задачи">
+  <div class="lhead"><h2><span class="lnum">14</span>🏆 Финал — как на собеседовании</h2><div class="lprog"><span>Прогресс урока:</span><div class="lbar"><i></i></div><b class="lcnt">0/0</b></div></div>
+  <p>Всё вместе, только боевые терминальные задачи. Формулируй сам, подсказки — если застрял. Если песочница «изношена» после экспериментов — жми ↺ в шапке терминала.</p>
+  <span class="tag t-practice">✏️ Боевые задачи</span>
+  <div class="task tterm" data-check="countFile"><div class="thead"><span class="kind">⌨ Задача 1</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Отчёт для тимлида.</b> Число ошибок в app.log должно лежать в файле <code>count.txt</code> — просто цифра 2, ничего лишнего.</p>
+    <details><summary>Подсказка</summary>grep -c … &gt; … или конвейер с wc.</details>
+    <details class="ans"><summary>Ответ</summary><code>grep -c ERROR logs/app.log &gt; count.txt</code></details></div>
+  <div class="task tterm" data-check="allLogs8"><div class="thead"><span class="kind">⌨ Задача 2</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Сколько строк во ВСЕХ логах вместе?</b> app.log + error.log одним конвейером — ответ 8.</p>
+    <details><summary>Подсказка</summary>cat умеет склеивать несколько файлов: cat файл1 файл2 | …</details>
+    <details class="ans"><summary>Ответ</summary><code>cat logs/app.log logs/error.log | wc -l</code></details></div>
+  <div class="task tterm" data-check="andBackup"><div class="thead"><span class="kind">⌨ Задача 3</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Безопасный бэкап одной строкой.</b> Создай папку <code>safe</code> и скопируй туда servers.txt, но копия должна делаться ТОЛЬКО если папка создалась. Один рядок, оператор <code>&amp;&amp;</code>.</p>
+    <details class="ans"><summary>Ответ</summary><code>mkdir safe &amp;&amp; cp servers.txt safe/</code></details></div>
+  <div class="task tterm" data-check="prodFile"><div class="thead"><span class="kind">⌨ Задача 4</span><span class="tstatus">ждёт команду</span></div>
+    <p><b class="ttitle">Список прод-серверов для дежурного.</b> В <code>prod.txt</code> — только строки с prod из servers.txt (их ровно 2).</p>
+    <details class="ans"><summary>Ответ</summary><code>grep prod servers.txt &gt; prod.txt</code></details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🗣 Блиц-интервью</span></div>
+    <p>Объясни вслух за 30 секунд: <code>cat app.log | grep ERROR | wc -l</code> — каждое слово и символ.</p>
+    <details class="ans"><summary>Эталон</summary>«cat (concatenate) выводит файл; труба | передаёт вывод в grep (global regex print) — оставляет строки с ERROR; вторая труба — в wc (word count) с флагом -l (lines) — счётчик строк. Итог: количество ошибок».</details></div>
+  <div class="task" data-manual><div class="thead"><span class="kind">🧠 Сценарий</span></div>
+    <p>Прод лёг: сайт отдаёт 502, деплой-скрипт не запускается, диск 95%. Твой план с командами?</p>
+    <details class="ans"><summary>Ответ</summary>1) <code>curl -I</code> — подтвердить 502. 2) <code>ss -tulpn</code> / <code>ps aux | grep …</code> — живы ли процессы. 3) <code>df -h</code> + <code>du -sh /var/log</code> — найти пожирателя диска, почистить. 4) <code>ls -l</code> скрипта → <code>chmod +x</code>. 5) Перезапуск, <code>tail -f</code> логов, повторный healthcheck.</details></div>
+</section>
+
+<div class="lnav">
+  <button id="prevBtn">← Предыдущий</button>
+  <span class="pos" id="posText">урок 1 / 15</span>
+  <button id="nextBtn">Следующий →</button>
+</div>
+<footer class="site">Linux &amp; Bash for DevOps · Made for DevOps interview practice · <a href="https://github.com/wusder">wusder</a><br>Схема: 📖 теория → 👁 визуализация → ⌨ делаешь в терминале справа → ✓ задание закрывается само.</footer>
+</main>
+
+<!-- ========== ТЕРМИНАЛ ========== -->
+<div class="term" id="termPanel">
+  <div class="term-bar">
+    <span class="dot" style="background:#f85149"></span><span class="dot" style="background:#d29922"></span><span class="dot" style="background:#3fb950"></span>
+    <span class="term-title">devops@practice: песочница</span>
+    <button class="tbtn" id="sandboxReset" title="Сбросить песочницу (файлы и процессы)">↺</button>
+    <button class="tbtn" id="termHide" title="Скрыть терминал">»</button>
+  </div>
+  <div class="term-task" id="termTask"><span>⌨</span><span class="tt">задания урока появятся здесь</span></div>
+  <div class="term-out" id="out"></div>
+  <div class="tchips">
+    <button class="chip">help</button><button class="chip">ls -la</button><button class="chip">ss -tulpn</button><button class="chip">cat logs/app.log</button><button class="chip">man wc</button>
+  </div>
+  <div class="term-in"><span class="ps" id="ps">devops@practice:~$</span><input id="cmd" autocomplete="off" spellcheck="false" aria-label="Командная строка" placeholder="команда + Enter (help — список)"></div>
+</div>
+<button class="term-fab" id="termFab">⌨ терминал</button>
+<div id="termBackdrop"></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+/* ================= ПЕСОЧНИЦА ================= */
+const termOut=$('#out'),termIn=$('#cmd'),termPs=$('#ps');
+const F=(v,m)=>({t:'f',v:v,m:m===undefined?644:m});
+const D=c=>({t:'d',c:c,m:755});
+function makeFS(){return D({home:D({devops:D({
+ 'notes.txt':F('todo: check logs\nfix nginx config\ncall team\n'),
+ 'servers.txt':F('web:prod:10.0.0.1\ndb:prod:10.0.0.5\nweb:stage:10.0.1.1\ncache:dev:10.0.2.2\n'),
+ '.env':F('SECRET=42\n',644),
+ logs:D({'app.log':F('2026-01-01 INFO Server started\n2026-01-01 WARN High memory\n2026-01-01 ERROR Connection failed\n2026-01-02 INFO Request ok\n2026-01-02 ERROR Timeout\n2026-01-02 INFO Done\n'),
+         'error.log':F('ERROR Connection failed\nERROR Timeout\n')}),
+ scripts:D({'deploy.sh':F('#!/bin/bash\necho "Deploy start"\necho "Deploy done"\n',644)})
+})})});}
+function makeProcs(){return[
+ {u:'root',pid:1,cpu:'0.0',mem:'0.1',cmd:'/sbin/init',ports:[]},
+ {u:'root',pid:640,cpu:'0.0',mem:'0.3',cmd:'sshd: /usr/sbin/sshd -D',ports:[22]},
+ {u:'root',pid:812,cpu:'0.3',mem:'1.2',cmd:'nginx: master process',ports:[80,443]},
+ {u:'www',pid:813,cpu:'0.7',mem:'2.0',cmd:'nginx: worker process',ports:[],parent:812},
+ {u:'postgres',pid:980,cpu:'1.1',mem:'4.0',cmd:'postgres: main',ports:[5432]},
+ {u:'devops',pid:1204,cpu:'4.1',mem:'6.3',cmd:'node server.js',ports:[8080]},
+ {u:'devops',pid:1500,cpu:'0.0',mem:'0.2',cmd:'bash',ports:[]}
+];}
+let fsRoot=makeFS(),procList=makeProcs(),cwdArr=['home','devops'];
+const cmdHist=[];let histIdx=0,envVars={},lastResult='',prevPath='/home/devops';
+const manDict={
+ pwd:'pwd = print working directory. Показывает, где ты сейчас.',
+ ls:'ls = list. -l long подробно, -a all скрытые, -h human KB/MB.',
+ cd:'cd = change directory. .. вверх, ~ домой, / корень, . текущая.',
+ cat:'cat = concatenate («склеить»). Выводит файл(ы) целиком.',
+ less:'less — листалка: стрелки, /слово поиск, q выход.',
+ head:'head = «голова»: первые строки (10 по умолчанию). -n N число.',
+ tail:'tail = «хвост»: последние строки. -n N, -f follow — вживую.',
+ wc:'wc = word count («ворд каунт»). -l lines строки, -w words слова, -c байты.',
+ grep:'grep = global regex print. -i без регистра, -v наоборот, -c счёт, -n номера, -E «или».',
+ sort:'sort — сортировка. -r reverse, -n numeric, -u unique.',
+ uniq:'uniq = unique: убирает СОСЕДНИЕ повторы (сначала sort!). -c счётчик.',
+ cut:'cut — резать колонки. -d delimiter, -f field.',
+ awk:'awk — язык колонок (Aho, Weinberger, Kernighan). awk -F ":" \'{print $2}\'.',
+ sed:'sed = stream editor. s/что/на что/g — замена; -i меняет сам файл.',
+ mkdir:'mkdir = make directory. -p — цепочку папок.',
+ touch:'touch — создать пустой файл.',
+ cp:'cp = copy: копия, оригинал остаётся.',
+ mv:'mv = move: перенос/переименование.',
+ rm:'rm = remove: НАВСЕГДА. -r рекурсивно, -f без вопросов. Опасно!',
+ find:'find — ищет САМИ файлы: find . -name "*.log" -type f.',
+ which:'which — путь к исполняемому файлу команды.',
+ chmod:'chmod = change mode. r=4, w=2, x=1. chmod 755 / chmod +x.',
+ ps:'ps = process status. ps aux — все процессы; PID — номер.',
+ ss:'ss = socket statistics. ss -tulpn: t tcp, u udp, l listening, p process, n numeric. Кто занял порт.',
+ netstat:'netstat = network statistics. Старый аналог ss: netstat -tulpn.',
+ lsof:'lsof = list open files. lsof -i :8080 — кто сидит на порту (i = internet).',
+ kill:'kill — сигнал по PID. TERM(15) вежливо, -9 KILL жёстко.',
+ df:'df = disk free: свободно на дисках. -h human.',
+ du:'du = disk usage: вес папки. -sh summary+human.',
+ free:'free — RAM. Смотри available. -h human.',
+ curl:'curl = client for URL. -I заголовки, -s тихо, -o файл.',
+ ping:'ping — сонар: жив ли хост по сети. Не проверяет приложение!',
+ echo:'echo — печать текста; $VAR подставит переменную.',
+ true:'true — всегда успех (код 0). Для тренировки && и ||.',
+ false:'false — всегда ошибка (код 1). Для тренировки ||.'
+};
+const whichDict={bash:'/usr/bin/bash',sh:'/usr/bin/sh',ls:'/usr/bin/ls',grep:'/usr/bin/grep',python3:'/usr/bin/python3',nginx:'/usr/sbin/nginx',node:'/usr/bin/node',ss:'/usr/bin/ss'};
+function pathStr(){return '/'+cwdArr.join('/');}
+function promptStr(){const p=pathStr();const s=p==='/home/devops'?'~':p.replace(/^\/home\/devops/,'~');return 'devops@practice:'+s+'$';}
+function resolvePath(arg){
+ if(!arg)return cwdArr.slice();
+ let s=arg,parts;
+ if(s==='~'||s.startsWith('~/')){parts=['home','devops'];s=s.slice(1);}
+ else if(s.startsWith('/')){parts=[];s=s.slice(1);}
+ else parts=cwdArr.slice();
+ s.split('/').forEach(seg=>{if(!seg||seg==='.')return;if(seg==='..')parts.pop();else parts.push(seg);});
+ return parts;
+}
+function getNode(arr){let n=fsRoot;for(const p of arr){if(n.t!=='d'||!n.c[p])return null;n=n.c[p];}return n;}
+function modeStr(m){return [Math.floor(m/100),Math.floor(m/10)%10,m%10].map(d=>(d&4?'r':'-')+(d&2?'w':'-')+(d&1?'x':'-')).join('');}
+function humanSize(b){if(b<1024)return b+'B';if(b<1048576)return Math.round(b/1024)+'K';return (b/1048576).toFixed(1)+'M';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function tPrint(txt,cls){const d=document.createElement('div');if(cls)d.className=cls;d.innerHTML=esc(txt);termOut.appendChild(d);termOut.scrollTop=termOut.scrollHeight;}
+function lineSplit(t){return t===''?[]:t.replace(/\n$/,'').split('\n');}
+function readInput(files,stdin,label){
+ if(!files.length)return{text:stdin||''};
+ let t='';
+ for(const f of files){const n=getNode(resolvePath(f));
+  if(!n)return{e:label+': '+f+': No such file or directory'};
+  if(n.t==='d')return{e:label+': '+f+': Is a directory'};
+  t+=n.v;}
+ return{text:t};
+}
+function dirSize(n){if(n.t==='f')return n.v.length;let s=4096;for(const k in n.c)s+=dirSize(n.c[k]);return s;}
+function writeFile(arrPath,data,append){
+ const parent=getNode(arrPath.slice(0,-1));const nm=arrPath[arrPath.length-1];
+ if(!parent||parent.t!=='d')return 'запись: нет такой папки';
+ const ex=parent.c[nm];
+ if(append&&ex&&ex.t==='f')ex.v+=data;else parent.c[nm]=F(data);
+ return null;
+}
+function sliceLines(a,s,label,fromHead){
+ let num=10;const rest=[];
+ for(let i=0;i<a.length;i++){const x=a[i];
+  if(x==='-n'){num=parseInt(a[++i])||10;}
+  else if(/^-\d+$/.test(x))num=parseInt(x.slice(1));
+  else if(x.startsWith('-'))continue;
+  else rest.push(x);}
+ const r=readInput(rest,s,label);if(r.e)return{e:r.e};
+ const lines=lineSplit(r.text);
+ return{o:(fromHead?lines.slice(0,num):lines.slice(-num)).join('\n')};
+}
+function copyMove(a,isMove){
+ const paths=a.filter(x=>!x.startsWith('-'));
+ if(paths.length<2)return{e:(isMove?'mv':'cp')+': нужно ОТКУДА и КУДА'};
+ const srcArr=resolvePath(paths[0]);const src=getNode(srcArr);
+ if(!src)return{e:(isMove?'mv':'cp')+': '+paths[0]+': No such file or directory'};
+ if(src.t==='d')return{e:(isMove?'mv':'cp')+': учебный режим: только файлы (папкам нужен -r)'};
+ if(isMove&&srcArr.length<3)return{e:'mv: учебная защита'};
+ let dstArr=resolvePath(paths[1]);const dst=getNode(dstArr);
+ if(dst&&dst.t==='d')dstArr=dstArr.concat(srcArr[srcArr.length-1]);
+ const parent=getNode(dstArr.slice(0,-1));
+ if(!parent||parent.t!=='d')return{e:(isMove?'mv':'cp')+': нет папки назначения'};
+ parent.c[dstArr[dstArr.length-1]]=F(src.v,src.m);
+ if(isMove)delete getNode(srcArr.slice(0,-1)).c[srcArr[srcArr.length-1]];
+ return{o:''};
+}
+function portsTable(){
+ const rows=['Netid State  Local Address:Port   Process'];
+ procList.forEach(p=>p.ports.forEach(pt=>{
+  const name=p.cmd.split(/[\s:]/)[0];
+  rows.push('tcp   LISTEN 0.0.0.0:'+String(pt).padEnd(12)+' users:(("'+name+'",pid='+p.pid+'))');
+ }));
+ return rows.join('\n');
+}
+const CMD={
+ help(){return{o:'Команды: pwd ls cd cat less head tail wc grep echo sort uniq cut awk sed\n         mkdir touch cp mv rm find which chmod man df du free\n         ps ss netstat lsof kill curl ping true false history whoami clear\nПайпы: cmd1 | cmd2   Запись: > файл / >> файл   Цепочки: && и ||\nПеременные: NAME=web затем echo $NAME   Скрипт: ./scripts/deploy.sh\nСправка с переводом: man wc / man ss / man grep ...'};},
+ pwd(){return{o:pathStr()};},
+ whoami(){return{o:'devops'};},
+ echo(a){return{o:a.join(' ')};},
+ true(){return{o:''};},
+ false(){return{e:'false: завершилась с кодом 1 (так и задумано — тренируй ||)'};},
+ history(){return{o:cmdHist.map((c,i)=>String(i+1).padStart(4)+'  '+c).join('\n')};},
+ man(a){if(!a[0])return{e:'man: укажи команду, например man wc'};const m=manDict[a[0]];return m?{o:m}:{e:'Нет учебной справки по «'+a[0]+'»'};},
+ ls(a){
+  const letters=a.filter(x=>x.startsWith('-')).join('');
+  const paths=a.filter(x=>!x.startsWith('-'));
+  const n=getNode(resolvePath(paths[0]));
+  if(!n)return{e:'ls: нет такого пути: '+(paths[0]||'')};
+  if(n.t==='f')return{o:paths[0]};
+  const names=Object.keys(n.c).filter(k=>letters.includes('a')||!k.startsWith('.')).sort();
+  if(letters.includes('l'))return{o:names.map(k=>{const it=n.c[k];const sz=it.t==='d'?4096:it.v.length;
+   const szs=letters.includes('h')?humanSize(sz):String(sz);
+   return (it.t==='d'?'d':'-')+modeStr(it.m)+'  devops '+szs.padStart(7)+'  Nov 26 12:00  '+k;}).join('\n')};
+  return{o:names.join('  ')};
+ },
+ cd(a){const t=resolvePath(a[0]||'~');const n=getNode(t);
+  if(!n)return{e:'cd: нет папки: '+(a[0]||'')};
+  if(n.t!=='d')return{e:'cd: не папка: '+a[0]};
+  cwdArr=t;termPs.textContent=promptStr();return{o:''};},
+ cat(a,s){const r=readInput(a.filter(x=>!x.startsWith('-')),s,'cat');return r.e?{e:r.e}:{o:r.text};},
+ less(a,s){const r=CMD.cat(a,s);return r.e?r:{o:r.o+'(учебный less: показан весь файл; настоящий листается, выход q)'};},
+ head(a,s){return sliceLines(a,s,'head',true);},
+ tail(a,s){return sliceLines(a,s,'tail',false);},
+ wc(a,s){
+  const letters=a.filter(x=>x.startsWith('-')).join('');
+  const files=a.filter(x=>!x.startsWith('-'));
+  const r=readInput(files,s,'wc');if(r.e)return{e:r.e};
+  const t=r.text,lines=lineSplit(t).length,words=(t.match(/\S+/g)||[]).length,chars=t.length;
+  const lbl=files[0]?' '+files[0]:'';
+  if(letters.includes('l'))return{o:lines+lbl};
+  if(letters.includes('w'))return{o:words+lbl};
+  if(letters.includes('c'))return{o:chars+lbl};
+  return{o:lines+' '+words+' '+chars+lbl};
+ },
+ grep(a,s){
+  const letters=a.filter(x=>x.startsWith('-')).join('');
+  const rest=a.filter(x=>!x.startsWith('-'));
+  const pat=rest[0];if(pat===undefined)return{e:'grep: нужен шаблон'};
+  const r=readInput(rest.slice(1),s,'grep');if(r.e)return{e:r.e};
+  let re=null;try{re=new RegExp(pat,letters.includes('i')?'i':'');}catch(err){re=null;}
+  const matched=[];lineSplit(r.text).forEach((l,idx)=>{const hit=re?re.test(l):l.includes(pat);
+   if(letters.includes('v')?!hit:hit)matched.push({l,idx});});
+  if(letters.includes('c'))return{o:String(matched.length)};
+  return{o:matched.map(m=>(letters.includes('n')?(m.idx+1)+':':'')+m.l).join('\n')};
+ },
+ sort(a,s){
+  const letters=a.filter(x=>x.startsWith('-')).join('');
+  const r=readInput(a.filter(x=>!x.startsWith('-')),s,'sort');if(r.e)return{e:r.e};
+  let arr=lineSplit(r.text);
+  arr.sort(letters.includes('n')?(x,y)=>(parseFloat(x)||0)-(parseFloat(y)||0):(x,y)=>x<y?-1:x>y?1:0);
+  if(letters.includes('r'))arr.reverse();
+  if(letters.includes('u'))arr=arr.filter((x,i)=>arr.indexOf(x)===i);
+  return{o:arr.join('\n')};
+ },
+ uniq(a,s){
+  const cnt=a.includes('-c');
+  const r=readInput(a.filter(x=>!x.startsWith('-')),s,'uniq');if(r.e)return{e:r.e};
+  const arr=lineSplit(r.text),res=[];let prev=null,c=0;
+  const push=()=>{if(prev!==null)res.push(cnt?String(c).padStart(4)+' '+prev:prev);};
+  arr.forEach(l=>{if(l===prev)c++;else{push();prev=l;c=1;}});push();
+  return{o:res.join('\n')};
+ },
+ cut(a,s){
+  let delim='\t',fields=null;const files=[];
+  for(let i=0;i<a.length;i++){const x=a[i];
+   if(x==='-d')delim=a[++i];else if(x==='-f')fields=a[++i];
+   else if(x.startsWith('-'))continue;else files.push(x);}
+  if(!fields)return{e:'cut: укажи -f N'};
+  const r=readInput(files,s,'cut');if(r.e)return{e:r.e};
+  const picks=fields.split(',').map(x=>parseInt(x)-1);
+  return{o:lineSplit(r.text).map(l=>{const parts=l.split(delim);return picks.map(p=>parts[p]===undefined?'':parts[p]).join(delim);}).join('\n')};
+ },
+ awk(a,s){
+  let sep=null,prog=null;const files=[];
+  for(let i=0;i<a.length;i++){const x=a[i];
+   if(x==='-F')sep=a[++i];
+   else if(x.startsWith('-'))continue;
+   else if(prog===null)prog=x;else files.push(x);}
+  if(!prog)return{e:'awk: нужна программа, например \'{print $1}\''};
+  const m=prog.match(/^(?:\/(.+?)\/\s*)?\{\s*print\s+(.+?)\s*\}$/);
+  if(!m)return{e:'awk: учебный режим понимает \'{print $N}\' и \'/шаблон/ {print $N}\''};
+  let re=null;if(m[1]){try{re=new RegExp(m[1]);}catch(err){re=null;}}
+  const picks=m[2].split(',').map(x=>x.trim());
+  const r=readInput(files,s,'awk');if(r.e)return{e:r.e};
+  const out=lineSplit(r.text).filter(l=>!re||re.test(l)).map(l=>{
+   const parts=sep?l.split(sep):l.split(/\s+/).filter(Boolean);
+   return picks.map(p=>p==='$0'?l:(/^\$\d+$/.test(p)?(parts[parseInt(p.slice(1))-1]||''):p.replace(/^["']|["']$/g,''))).join(' ');
+  }).join('\n');
+  return{o:out};
+ },
+ sed(a,s){
+  let inplace=false,quiet=false,script=null;const files=[];
+  for(const x of a){
+   if(x==='-i')inplace=true;else if(x==='-n')quiet=true;
+   else if(x.startsWith('-'))continue;
+   else if(script===null)script=x;else files.push(x);}
+  if(!script)return{e:'sed: нужен скрипт, например \'s/prod/PROD/g\''};
+  const sub=script.match(/^s\/(.*?)\/(.*?)\/(g?)$/);
+  const range=script.match(/^(\d+),(\d+)p$/);
+  if(!sub&&!range)return{e:'sed: учебный режим: s/что/на что/g или -n \'2,4p\''};
+  const r=readInput(files,s,'sed');if(r.e)return{e:r.e};
+  let lines=lineSplit(r.text);
+  if(range){const a1=+range[1],b1=+range[2];return{o:lines.slice(a1-1,b1).join('\n')};}
+  let re;try{re=new RegExp(sub[1],sub[3]?'g':'');}catch(err){return{e:'sed: плохой шаблон'};}
+  const res=lines.map(l=>l.replace(re,sub[2])).join('\n');
+  if(inplace&&files[0]){const err=writeFile(resolvePath(files[0]),res+'\n',false);if(err)return{e:err};return{o:''};}
+  return{o:res};
+ },
+ mkdir(a){const nm0=a.filter(x=>!x.startsWith('-'))[0];if(!nm0)return{e:'mkdir: укажи имя'};
+  const t=resolvePath(nm0);const parent=getNode(t.slice(0,-1));
+  if(!parent||parent.t!=='d')return{e:'mkdir: нет родительской папки'};
+  const nm=t[t.length-1];if(parent.c[nm])return{e:'mkdir: '+nm+': File exists'};
+  parent.c[nm]=D({});return{o:''};},
+ touch(a){if(!a[0])return{e:'touch: укажи имя'};
+  const t=resolvePath(a[0]);const parent=getNode(t.slice(0,-1));
+  if(!parent||parent.t!=='d')return{e:'touch: нет родительской папки'};
+  const nm=t[t.length-1];if(!parent.c[nm])parent.c[nm]=F('');return{o:''};},
+ rm(a){
+  const rec=a.filter(x=>x.startsWith('-')).join('').includes('r');
+  const target=a.filter(x=>!x.startsWith('-'))[0];
+  if(!target)return{e:'rm: укажи файл'};
+  const t=resolvePath(target);
+  if(t.length<3)return{e:'rm: учебная защита: «'+target+'» удалять нельзя'};
+  const n=getNode(t);if(!n)return{e:'rm: '+target+': No such file or directory'};
+  if(n.t==='d'&&!rec)return{e:'rm: '+target+': Is a directory (добавь -r)'};
+  delete getNode(t.slice(0,-1)).c[t[t.length-1]];return{o:''};
+ },
+ cp(a){return copyMove(a,false);},
+ mv(a){return copyMove(a,true);},
+ chmod(a){
+  const mode=a[0],file=a[1];
+  if(!mode||!file)return{e:'chmod: нужно chmod 755 файл или chmod +x файл'};
+  const n=getNode(resolvePath(file));if(!n)return{e:'chmod: '+file+': No such file or directory'};
+  if(mode==='+x')n.m=[Math.floor(n.m/100),Math.floor(n.m/10)%10,n.m%10].map(d=>d|1).reduce((acc,d)=>acc*10+d,0);
+  else if(/^[0-7]{3}$/.test(mode))n.m=parseInt(mode,10);
+  else return{e:'chmod: учебный режим понимает 755 / 644 / +x'};
+  return{o:''};
+ },
+ find(a){
+  let base='.',namePat=null,type=null;
+  for(let i=0;i<a.length;i++){const x=a[i];
+   if(x==='-name')namePat=a[++i];else if(x==='-type')type=a[++i];
+   else if(!x.startsWith('-'))base=x;}
+  const start=getNode(resolvePath(base));
+  if(!start)return{e:'find: нет пути: '+base};
+  let re=null;
+  if(namePat)re=new RegExp('^'+namePat.replace(/[.+?^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*')+'$');
+  const res=[];const baseDisp=base.replace(/\/$/,'')||'/';
+  (function walk(node,rel){Object.keys(node.c).sort().forEach(k=>{
+   const it=node.c[k];const relPath=rel.concat(k);
+   const typeOk=!type||(type==='d'&&it.t==='d')||(type==='f'&&it.t==='f');
+   if(typeOk&&(!re||re.test(k)))res.push(baseDisp+'/'+relPath.join('/'));
+   if(it.t==='d')walk(it,relPath);});})(start,[]);
+  return{o:res.join('\n')};
+ },
+ which(a){if(!a[0])return{e:'which: укажи команду'};return whichDict[a[0]]?{o:whichDict[a[0]]}:{e:'which: нет '+a[0]+' в PATH'};},
+ ss(){return{o:portsTable()};},
+ netstat(){return{o:portsTable()};},
+ lsof(a){
+  const i=a.indexOf('-i');
+  if(i<0)return{e:'lsof: учебный режим: lsof -i :ПОРТ (например lsof -i :8080)'};
+  const q=(a[i+1]||'').replace(':','');
+  const rows=['COMMAND   PID   USER   TYPE  NAME'];
+  procList.forEach(p=>p.ports.forEach(pt=>{
+   if(!q||String(pt)===q)rows.push(p.cmd.split(/[\s:]/)[0].padEnd(9)+String(p.pid).padStart(4)+'  '+p.u.padEnd(7)+'IPv4  TCP *:'+pt+' (LISTEN)');
+  }));
+  return rows.length>1?{o:rows.join('\n')}:{o:'(пусто) — никто не слушает, порт свободен'};
+ },
+ kill(a){
+  const hard=a.includes('-9');
+  const pid=parseInt(a.filter(x=>!x.startsWith('-'))[0]);
+  if(!pid)return{e:'kill: укажи PID, например kill 1204'};
+  const idx=procList.findIndex(p=>p.pid===pid);
+  if(idx<0)return{e:'kill: ('+pid+') - No such process'};
+  procList=procList.filter(p=>p.pid!==pid&&p.parent!==pid);
+  return{o:hard?'Процесс '+pid+' уничтожен сигналом KILL (9)':'Процессу '+pid+' отправлен TERM (15) — вежливое завершение'};
+ },
+ df(){return{o:'Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1        40G   28G   12G  70% /\ntmpfs           2.0G     0  2.0G   0% /dev/shm'};},
+ free(){return{o:'               total        used        free      shared  buff/cache   available\nMem:           7.7Gi       3.1Gi       1.2Gi       0.2Gi       3.4Gi       4.1Gi\nSwap:          2.0Gi          0B       2.0Gi'};},
+ du(a){
+  const p=a.filter(x=>!x.startsWith('-'))[0]||'.';
+  const n=getNode(resolvePath(p));if(!n)return{e:'du: нет пути: '+p};
+  return{o:humanSize(dirSize(n))+'\t'+p};
+ },
+ ps(){const head='USER         PID %CPU %MEM COMMAND';
+  return{o:[head].concat(procList.map(p=>p.u.padEnd(10)+String(p.pid).padStart(6)+'  '+p.cpu.padStart(4)+' '+p.mem.padStart(4)+' '+p.cmd)).join('\n')};},
+ curl(a){
+  let heads=false,outFile=null,url=null;
+  for(let i=0;i<a.length;i++){const x=a[i];
+   if(x==='-o')outFile=a[++i];
+   else if(x.startsWith('-')){if(x.includes('I'))heads=true;}
+   else url=x;}
+  if(!url)return{e:'curl: укажи URL'};
+  const isHealth=url.includes('health');
+  const body=isHealth?'{"status":"ok"}':'<html><body>It works!</body></html>';
+  if(heads)return{o:'HTTP/1.1 200 OK\nServer: nginx/1.24.0\nContent-Type: '+(isHealth?'application/json':'text/html')+'\nX-Practice: учебный ответ'};
+  if(outFile){const err=writeFile(resolvePath(outFile),body+'\n',false);return err?{e:err}:{o:''};}
+  return{o:body};
+ },
+ ping(a){const h=a.filter(x=>!x.startsWith('-'))[0];
+  if(!h)return{e:'ping: укажи хост'};
+  return{o:'PING '+h+' (10.0.0.5): 56 bytes (учебный ответ)\n64 bytes: icmp_seq=1 time=0.42 ms\n64 bytes: icmp_seq=2 time=0.51 ms\n64 bytes: icmp_seq=3 time=0.47 ms\n--- 3 packets transmitted, 3 received, 0% loss'};
+ },
+ clear(){termOut.innerHTML='';return{o:''};}
+};
+function execStage(tokens,stdin){
+ if(/^[A-Za-z_]\w*=/.test(tokens[0])){
+  const eq=tokens[0].indexOf('=');
+  envVars[tokens[0].slice(0,eq)]=[tokens[0].slice(eq+1)].concat(tokens.slice(1)).join(' ');
+  return{o:''};
+ }
+ if(tokens[0]==='export'&&tokens[1]&&tokens[1].includes('='))return execStage(tokens.slice(1),stdin);
+ if(tokens[0].startsWith('./')||tokens[0]==='bash'||tokens[0]==='sh'){
+  const direct=tokens[0].startsWith('./');
+  const p=direct?tokens[0].slice(2):tokens[1];
+  if(!p)return{e:'bash: укажи файл скрипта'};
+  const n=getNode(resolvePath(p));
+  if(!n)return{e:'bash: '+p+': No such file or directory'};
+  if(n.t==='d')return{e:'bash: '+p+': Is a directory'};
+  const exec=[Math.floor(n.m/100),Math.floor(n.m/10)%10,n.m%10].some(d=>d&1);
+  if(direct&&!exec)return{e:'bash: ./'+p+': Permission denied (подсказка: chmod +x '+p+')'};
+  return{o:n.v.split('\n').filter(l=>l.startsWith('echo ')).map(l=>l.slice(5).replace(/^["']|["']$/g,'')).join('\n')};
+ }
+ const fn=CMD[tokens[0]];
+ if(!fn)return{e:tokens[0]+': команда не найдена (help — список)'};
+ return fn(tokens.slice(1),stdin);
+}
+function runChunk(toks){
+ let redir=null,append=false;
+ const rIdx=Math.max(toks.lastIndexOf('>'),toks.lastIndexOf('>>'));
+ if(rIdx>=0){append=toks[rIdx]==='>>';
+  if(rIdx!==toks.length-2){tPrint('редирект: ожидается «команда > файл» в конце','e');return{ok:false,out:''};}
+  redir=toks[rIdx+1];toks=toks.slice(0,rIdx);}
+ const stages=[];let cur=[];
+ toks.forEach(t=>{if(t==='|'){stages.push(cur);cur=[];}else cur.push(t);});
+ stages.push(cur);
+ if(!stages.length||stages.some(st=>!st.length)){tPrint('пустая команда в пайпе','e');return{ok:false,out:''};}
+ let stdin='';
+ for(const st of stages){
+  const r=execStage(st,stdin);
+  if(r.e){tPrint(r.e,'e');return{ok:false,out:''};}
+  const o=r.o||'';stdin=o?(o.endsWith('\n')?o:o+'\n'):'';
+ }
+ const result=stdin.replace(/\n$/,'');
+ if(redir){const err=writeFile(resolvePath(redir),result?result+'\n':'',append);
+  if(err){tPrint(err,'e');return{ok:false,out:''};}
+  return{ok:true,out:''};}
+ if(result)tPrint(result);
+ const last=stages[stages.length-1];
+ if(last[0]==='tail'&&last.includes('-f')){
+  const logNode=getNode(['home','devops','logs','app.log']);
+  tPrint('— tail -f: слежу… (в реальности выход Ctrl+C; здесь поток остановится сам)','m');
+  ['2026-01-02 WARN Retry scheduled','2026-01-02 INFO Recovered'].forEach((l,i)=>{
+   setTimeout(()=>{const ln=getNode(['home','devops','logs','app.log']);if(ln)ln.v+=l+'\n';tPrint(l);},900*(i+1));});
+ }
+ return{ok:true,out:result};
+}
+function runLine(raw){
+ prevPath=pathStr();
+ const line=raw.replace(/\$([A-Za-z_]\w*)/g,(m,k)=>envVars[k]!==undefined?envVars[k]:'');
+ const toks=(line.match(/"[^"]*"|'[^']*'|>>|&&|\|\||[|>]|[^\s|>&]+/g)||[]).map(t=>/^["']/.test(t)?t.slice(1,-1):t);
+ if(!toks.length)return;
+ const chunks=[];let curT=[],op=null;
+ toks.forEach(t=>{if(t==='&&'||t==='||'){chunks.push({op,toks:curT});curT=[];op=t;}else curT.push(t);});
+ chunks.push({op,toks:curT});
+ let prevOk=true,out='';
+ for(const ch of chunks){
+  if(!ch.toks.length){tPrint('пустая команда рядом с && / ||','e');break;}
+  if(ch.op==='&&'&&!prevOk)continue;
+  if(ch.op==='||'&&prevOk)continue;
+  const r=runChunk(ch.toks);prevOk=r.ok;if(r.out)out=r.out;else if(r.ok)out='';
+ }
+ lastResult=out;
+}
+function makeCtx(raw){return{
+ cmd:raw,out:lastResult,cwd:pathStr(),prevCwd:prevPath,hist:cmdHist.slice(),vars:envVars,procs:procList,
+ exists:p=>!!getNode(resolvePath(p)),
+ isDir:p=>{const n=getNode(resolvePath(p));return !!n&&n.t==='d';},
+ read:p=>{const n=getNode(resolvePath(p));return n&&n.t==='f'?n.v:null;},
+ mode:p=>{const n=getNode(resolvePath(p));return n?n.m:null;}
+};}
+function submitLine(){
+ const raw=termIn.value.trim();
+ tPrint(promptStr()+' '+raw,'u');
+ if(raw){cmdHist.push(raw);histIdx=cmdHist.length;runLine(raw);verifyActive(makeCtx(raw));}
+ termIn.value='';
+}
+termIn.addEventListener('keydown',e=>{
+ if(e.key==='Enter')submitLine();
+ else if(e.key==='ArrowUp'){if(histIdx>0){histIdx--;termIn.value=cmdHist[histIdx]||'';}e.preventDefault();}
+ else if(e.key==='ArrowDown'){if(histIdx<cmdHist.length){histIdx++;termIn.value=cmdHist[histIdx]||'';}e.preventDefault();}
+});
+$('#sandboxReset').addEventListener('click',()=>{
+ fsRoot=makeFS();procList=makeProcs();cwdArr=['home','devops'];envVars={};lastResult='';
+ termPs.textContent=promptStr();
+ tPrint('↺ Песочница сброшена: файлы, права и процессы как новые. Прогресс заданий сохранён.','m');
+});
+$$('.chip').forEach(b=>b.addEventListener('click',()=>{termIn.value=b.textContent.trim();termIn.focus();}));
+tPrint('Песочница готова. help — список команд, man wc — справка с переводом.','m');
+tPrint('Файлы: notes.txt, servers.txt, .env (скрытый), logs/, scripts/. Порты: 22, 80, 443, 5432, 8080.','m');
+
+/* ================= ПРОВЕРКА ЗАДАНИЙ ================= */
+const CHECKS={
+ help:c=>/^help\b/.test(c.cmd),
+ pwd:c=>/^pwd\b/.test(c.cmd)&&c.out.includes('/home/devops'),
+ lsHidden:c=>/^ls\b/.test(c.cmd)&&/-\w*a/.test(c.cmd)&&c.out.includes('.env'),
+ cdLogs:c=>c.cwd==='/home/devops/logs',
+ cdHome:c=>/^cd\b/.test(c.cmd)&&c.prevCwd==='/home/devops/logs'&&c.cwd==='/home/devops',
+ wcApp:c=>/^wc\s+-l\b/.test(c.cmd)&&c.cmd.includes('app.log')&&/^6/.test(c.out),
+ tail2:c=>/^tail\s+(-n\s*2|-2)\b/.test(c.cmd)&&c.cmd.includes('app.log')&&c.out.includes('INFO Done')&&c.out.split('\n').length===2,
+ tailF:c=>/^tail\b/.test(c.cmd)&&/-f\b/.test(c.cmd)&&c.cmd.includes('app.log'),
+ pipeErr:c=>(c.cmd.match(/\|/g)||[]).length>=2&&/cat\b/.test(c.cmd)&&/grep\s+ERROR/.test(c.cmd)&&/wc\s+-l/.test(c.cmd)&&c.out.trim()==='2',
+ errFile:c=>{const t=c.read('errors.txt');return !!t&&t.includes('Connection failed')&&t.includes('Timeout')&&!t.includes('INFO');},
+ appendNotes:c=>{const t=c.read('notes.txt');return !!t&&t.startsWith('todo')&&t.split('\n').filter(Boolean).length>=4;},
+ grepWarn:c=>/^grep\b/.test(c.cmd)&&c.cmd.includes('WARN')&&c.out.includes('High memory'),
+ grepC:c=>/^grep\s+-c\b/.test(c.cmd)&&c.cmd.includes('ERROR')&&c.out.trim()==='2',
+ grepV:c=>/^grep\s+-v\b/.test(c.cmd)&&c.cmd.includes('INFO')&&c.out.split('\n').length===3&&!c.out.includes('INFO'),
+ typesCount:c=>/cut\b/.test(c.cmd)&&/sort\b/.test(c.cmd)&&/uniq\s+-c/.test(c.cmd)&&c.out.includes('2 web'),
+ envsUniq:c=>/cut\b/.test(c.cmd)&&/-f\s*2/.test(c.cmd)&&/sort/.test(c.cmd)&&c.out.trim()==='dev\nprod\nstage',
+ awkEnv:c=>/^awk\b/.test(c.cmd)&&/\$2/.test(c.cmd)&&c.out.includes('prod'),
+ sedProd:c=>/^sed\b/.test(c.cmd)&&c.out.includes('PRODUCTION')&&!c.out.includes(':prod:'),
+ backupCopy:c=>{const a=c.read('backup/servers.txt'),b=c.read('servers.txt');return c.isDir('backup')&&!!a&&a===b;},
+ renameOld:c=>c.exists('backup/servers.old')&&!c.exists('backup/servers.txt'),
+ rmBackup:c=>/^rm\s+-\w*r/.test(c.cmd)&&c.cmd.includes('backup')&&!c.exists('backup'),
+ findLogs:c=>/^find\b/.test(c.cmd)&&c.out.includes('app.log')&&c.out.includes('error.log'),
+ findDirs:c=>/^find\b/.test(c.cmd)&&/-type\s+d/.test(c.cmd)&&c.out.includes('./logs')&&!c.out.includes('.txt'),
+ whichGrep:c=>/^which\s+grep/.test(c.cmd)&&c.out.includes('/usr/bin/grep'),
+ fixDeploy:c=>/^(\.\/|bash\s+|sh\s+)/.test(c.cmd)&&c.cmd.includes('deploy.sh')&&c.out.includes('Deploy done')&&c.hist.some(h=>/^chmod\s+(\+x|[0-7]{3})\b/.test(h)&&h.includes('deploy.sh')),
+ env600:c=>c.mode('.env')===600&&c.hist.some(h=>/^chmod\s+600\b/.test(h)&&h.includes('.env')),
+ port8080:c=>/^(ss|netstat|lsof)\b/.test(c.cmd)&&c.out.includes('8080')&&c.out.includes('1204'),
+ freePort:c=>/^kill\b/.test(c.cmd)&&!c.procs.some(p=>p.pid===1204),
+ portGone:c=>/^(ss|netstat|lsof)\b/.test(c.cmd)&&!c.out.includes('8080'),
+ dfH:c=>/^df\b/.test(c.cmd)&&c.out.includes('70%'),
+ duLogs:c=>/^du\b/.test(c.cmd)&&c.cmd.includes('logs')&&c.out.includes('logs'),
+ curlI:c=>/^curl\b/.test(c.cmd)&&/-I\b/.test(c.cmd)&&c.out.includes('200 OK'),
+ respFile:c=>{const t=c.read('resp.json');return !!t&&t.includes('"status":"ok"');},
+ varWc:c=>c.hist.some(h=>/^FILE=["']?logs\/app\.log/.test(h))&&/^wc\s+-l\s+\$FILE/.test(c.cmd)&&/^6/.test(c.out),
+ echoVar:c=>/^echo\b/.test(c.cmd)&&c.cmd.includes('$NAME')&&c.vars.NAME==='web01'&&c.out.includes('web01'),
+ countFile:c=>{const t=c.read('count.txt');return !!t&&t.trim()==='2';},
+ allLogs8:c=>/wc\s+-l/.test(c.cmd)&&c.cmd.includes('app.log')&&c.cmd.includes('error.log')&&/^8/.test(c.out),
+ andBackup:c=>/^mkdir\s+safe\s*&&/.test(c.cmd)&&c.read('safe/servers.txt')===c.read('servers.txt'),
+ prodFile:c=>{const t=c.read('prod.txt');return !!t&&t.trim()==='web:prod:10.0.0.1\ndb:prod:10.0.0.5';}
+};
+
+/* ================= УРОКИ / ПРОГРЕСС ================= */
+const storeSolved='lb_solved_v3',storeLesson='lb_lesson_v3',storeTerm='lb_term_v3';
+let solvedSet=new Set();
+try{solvedSet=new Set(JSON.parse(localStorage.getItem(storeSolved)||'[]'));}catch(err){}
+function saveSolved(){try{localStorage.setItem(storeSolved,JSON.stringify([...solvedSet]));}catch(err){}}
+const lessons=$$('.lesson');
+const lessonMeta={};
+lessons.forEach(l=>{
+ const tasks=[...l.querySelectorAll('.task')];
+ tasks.forEach((t,i)=>{t.id=l.id+'-t'+i;});
+ lessonMeta[l.id]={el:l,tasks,num:l.dataset.num,short:l.dataset.short,total:tasks.length};
+});
+let activeLesson=lessons[0].id;
+
+/* сайдбар */
+const srows=$('#srows');const sideRefs={};
+lessons.forEach(l=>{
+ const b=document.createElement('button');b.className='srow';b.dataset.target=l.id;
+ b.innerHTML='<span class="l1"><span class="num">'+l.dataset.num+'</span><span class="nm">'+l.dataset.short+'</span><span class="cnt">0/'+lessonMeta[l.id].total+'</span></span><span class="sbar"><i></i></span>';
+ b.addEventListener('click',()=>{openLesson(l.id);closeNav();});
+ srows.appendChild(b);sideRefs[l.id]=b;
+});
+function lessonSolvedCount(id){return lessonMeta[id].tasks.filter(t=>solvedSet.has(t.id)).length;}
+function refreshProgress(){
+ let all=0,done=0;
+ lessons.forEach(l=>{
+  const meta=lessonMeta[l.id],cnt=lessonSolvedCount(l.id);
+  all+=meta.total;done+=cnt;
+  const pct=meta.total?cnt/meta.total*100:0;
+  meta.el.querySelector('.lbar i').style.width=pct+'%';
+  meta.el.querySelector('.lcnt').textContent=cnt+'/'+meta.total;
+  const row=sideRefs[l.id];
+  row.querySelector('.sbar i').style.width=pct+'%';
+  const cntEl=row.querySelector('.cnt');
+  cntEl.textContent=(cnt===meta.total&&meta.total>0?'✓ ':'')+cnt+'/'+meta.total;
+  cntEl.classList.toggle('full',cnt===meta.total&&meta.total>0);
+ });
+ $('#allText').textContent=done+'/'+all;
+ $('#allBar').style.width=(all?done/all*100:0)+'%';
+}
+function toast(msg,big){
+ const t=document.createElement('div');t.className='toast'+(big?' big':'');t.textContent=msg;
+ $('#toasts').appendChild(t);
+ setTimeout(()=>t.classList.add('out'),2300);setTimeout(()=>t.remove(),2800);
+}
+function taskTitle(t){const b=t.querySelector('.ttitle');return b?b.textContent:(t.querySelector('p')?t.querySelector('p').textContent.slice(0,46):'задание');}
+function markTaskSolved(t){
+ t.classList.add('solved');
+ const st=t.querySelector('.tstatus');if(st)st.textContent='✓ решено';
+ const db=t.querySelector('.done-btn');if(db){db.classList.add('on');db.textContent='✓ решено';db.setAttribute('aria-pressed','true');}
+}
+function solveTask(t,auto){
+ if(solvedSet.has(t.id))return;
+ const lid=t.closest('.lesson').id;
+ const before=lessonSolvedCount(lid);
+ solvedSet.add(t.id);saveSolved();markTaskSolved(t);refreshProgress();updateTermStrip();
+ toast('✓ Решено: '+taskTitle(t).slice(0,52));
+ const meta=lessonMeta[lid];
+ if(before<meta.total&&lessonSolvedCount(lid)===meta.total)toast('🎉 Урок «'+meta.short+'» пройден полностью!',true);
+}
+function verifyActive(ctx){
+ lessonMeta[activeLesson].tasks.forEach(t=>{
+  const key=t.dataset.check;
+  if(key&&!solvedSet.has(t.id)&&CHECKS[key]){
+   let ok=false;try{ok=!!CHECKS[key](ctx);}catch(err){ok=false;}
+   if(ok)solveTask(t,true);
+  }
+ });
+}
+/* инициализация заданий */
+lessons.forEach(l=>{
+ lessonMeta[l.id].tasks.forEach(t=>{
+  if(t.dataset.check!==undefined){
+   if(solvedSet.has(t.id))markTaskSolved(t);
+  }else if(t.classList.contains('quiz')){
+   const okIdx=parseInt(t.dataset.ok);
+   const opts=[...t.querySelectorAll('.qopts button')];
+   const explain=t.querySelector('.qx'),retry=t.querySelector('.qretry');
+   const showSolved=()=>{opts.forEach((b,j)=>{b.disabled=true;if(j===okIdx)b.classList.add('right');});explain.hidden=false;retry.hidden=true;t.classList.add('solved');};
+   opts.forEach((b,j)=>b.addEventListener('click',()=>{
+    if(j===okIdx){solveTask(t,true);showSolved();}
+    else{b.classList.add('wrong');b.disabled=true;if(opts.every(o=>o.disabled))retry.hidden=false;}
+   }));
+   retry.addEventListener('click',()=>{opts.forEach(b=>{b.disabled=false;b.classList.remove('right','wrong');});explain.hidden=true;retry.hidden=true;});
+   if(solvedSet.has(t.id))showSolved();
+  }else{
+   const btn=document.createElement('button');btn.className='done-btn';btn.type='button';
+   const render=()=>{const on=solvedSet.has(t.id);btn.classList.toggle('on',on);btn.textContent=on?'✓ решено':'✓ решил сам';btn.setAttribute('aria-pressed',on);t.classList.toggle('solved',on);};
+   btn.addEventListener('click',()=>{
+    if(solvedSet.has(t.id)){solvedSet.delete(t.id);saveSolved();render();refreshProgress();updateTermStrip();}
+    else solveTask(t,false);
+   });
+   t.querySelector('.thead').appendChild(btn);render();
+  }
+ });
+});
+$('#progReset').addEventListener('click',()=>{
+ if(confirm('Сбросить весь прогресс?')){solvedSet.clear();saveSolved();try{localStorage.removeItem(storeLesson);}catch(err){}location.reload();}
+});
+
+/* ================= РОУТИНГ УРОКОВ ================= */
+function updateTermStrip(){
+ const strip=$('#termTask');
+ const pending=lessonMeta[activeLesson].tasks.find(t=>t.dataset.check!==undefined&&!solvedSet.has(t.id));
+ const hasTerm=lessonMeta[activeLesson].tasks.some(t=>t.dataset.check!==undefined);
+ if(pending){
+  strip.classList.remove('ok');
+  strip.innerHTML='<span>⌨</span><span class="tt">'+esc(taskTitle(pending))+'</span>';
+  strip.onclick=()=>{pending.scrollIntoView({behavior:'smooth',block:'center'});pending.classList.remove('flash');void pending.offsetWidth;pending.classList.add('flash');};
+ }else{
+  strip.classList.add('ok');
+  strip.innerHTML='<span>'+(hasTerm?'✓':'📖')+'</span><span class="tt">'+(hasTerm?'все терминальные задания урока решены':'в этом уроке задания без терминала')+'</span>';
+  strip.onclick=null;
+ }
+}
+function openLesson(id,fromHash){
+ if(!lessonMeta[id])id=lessons[0].id;
+ activeLesson=id;
+ lessons.forEach(l=>l.classList.toggle('active',l.id===id));
+ Object.keys(sideRefs).forEach(k=>sideRefs[k].classList.toggle('active',k===id));
+ const idx=lessons.findIndex(l=>l.id===id);
+ $('#prevBtn').disabled=idx===0;
+ $('#nextBtn').disabled=idx===lessons.length-1;
+ $('#posText').textContent='урок '+(idx+1)+' / '+lessons.length+' · '+lessonMeta[id].short;
+ $('#prevBtn').textContent=idx>0?'← '+lessonMeta[lessons[idx-1].id].num:'← Предыдущий';
+ $('#nextBtn').textContent=idx<lessons.length-1?lessonMeta[lessons[idx+1].id].num+' Следующий →':'Следующий →';
+ try{localStorage.setItem(storeLesson,id);}catch(err){}
+ if(!fromHash&&location.hash!=='#'+id){history.replaceState(null,'','#'+id);}
+ window.scrollTo({top:0,behavior:'auto'});
+ pipeReset();updateTermStrip();
+ verifyActive(makeCtx(''));
+ const row=sideRefs[id];if(row)row.scrollIntoView({block:'nearest'});
+}
+$('#prevBtn').addEventListener('click',()=>{const i=lessons.findIndex(l=>l.id===activeLesson);if(i>0)openLesson(lessons[i-1].id);});
+$('#nextBtn').addEventListener('click',()=>{const i=lessons.findIndex(l=>l.id===activeLesson);if(i<lessons.length-1)openLesson(lessons[i+1].id);});
+window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(lessonMeta[id]&&id!==activeLesson)openLesson(id,true);});
+
+/* ================= ТЕРМИНАЛ: ПАНЕЛЬ ================= */
+const mqDesktop=window.matchMedia('(min-width:1101px)');
+function setTerm(open){
+ document.body.classList.toggle('term-closed',!open);
+ const btn=$('#termToggle');btn.classList.toggle('on',open);btn.setAttribute('aria-pressed',open);
+ btn.textContent=open?'⌨ Терминал ✓':'⌨ Терминал';
+ try{localStorage.setItem(storeTerm,open?'1':'0');}catch(err){}
+ if(open)setTimeout(()=>termIn.focus({preventScroll:true}),320);
+}
+function termIsOpen(){return !document.body.classList.contains('term-closed');}
+$('#termToggle').addEventListener('click',()=>setTerm(!termIsOpen()));
+$('#termHide').addEventListener('click',()=>setTerm(false));
+$('#termFab').addEventListener('click',()=>setTerm(true));
+$('#termBackdrop').addEventListener('click',()=>setTerm(false));
+function closeNav(){document.body.classList.remove('nav-open');}
+$('#navBtn').addEventListener('click',()=>document.body.classList.toggle('nav-open'));
+$('#navBackdrop').addEventListener('click',closeNav);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNav();if(!mqDesktop.matches)setTerm(false);}});
+mqDesktop.addEventListener('change',ev=>setTerm(ev.matches));
+/* кнопки «повтори» */
+$$('.try').forEach(btn=>{
+ if(btn.closest('.trybox')||btn.closest('.lesson')){
+  btn.addEventListener('click',()=>{
+   termIn.value=btn.textContent.trim();
+   if(!termIsOpen())setTerm(true);
+   setTimeout(()=>termIn.focus({preventScroll:true}),340);
+  });
+ }
+});
+
+/* ================= ПАЙП-АНИМАЦИЯ ================= */
+const pipeData=['2026-01-01 INFO Server started','2026-01-01 WARN High memory','2026-01-01 ERROR Connection failed','2026-01-02 INFO Request ok','2026-01-02 ERROR Timeout','2026-01-02 INFO Done'];
+const pipeSrc=$('#pipeSrc'),pipeFilter=$('#pipeFilter'),pipeCount=$('#pipeCount'),pipeStat=$('#pipeStat'),pipeRunBtn=$('#pipeRun');
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep=ms=>new Promise(res=>setTimeout(res,reduceMotion?30:ms));
+let pipeToken=0;
+pipeData.forEach(l=>{const d=document.createElement('div');d.className='pline';d.textContent=l;pipeSrc.appendChild(d);});
+function pipeReset(){
+ pipeToken++;
+ [...pipeSrc.children].forEach(d=>d.className='pline');
+ pipeFilter.innerHTML='';pipeCount.textContent='0';
+ pipeStat.textContent='Нажми ▶ — увидишь, какие строки grep отбросит, а какие дойдут до счётчика.';
+ pipeRunBtn.disabled=false;pipeRunBtn.textContent='▶ Проиграть: cat app.log | grep ERROR | wc -l';
+}
+async function pipePlay(){
+ const my=++pipeToken;
+ [...pipeSrc.children].forEach(d=>d.className='pline');
+ pipeFilter.innerHTML='';pipeCount.textContent='0';pipeRunBtn.disabled=true;
+ pipeStat.textContent='cat читает файл и отдаёт строки в трубу…';
+ let count=0;const rows=[...pipeSrc.children];
+ for(let i=0;i<rows.length;i++){
+  if(my!==pipeToken)return;
+  rows[i].classList.add('scan');await sleep(340);
+  if(my!==pipeToken)return;
+  if(pipeData[i].includes('ERROR')){
+   rows[i].classList.remove('scan');rows[i].classList.add('pass');
+   const f=document.createElement('div');f.className='fline';f.textContent=pipeData[i];pipeFilter.appendChild(f);
+   await sleep(280);if(my!==pipeToken)return;
+   count++;pipeCount.textContent=count;pipeCount.classList.add('pop');
+   setTimeout(()=>pipeCount.classList.remove('pop'),180);
+   pipeStat.textContent='grep пропустил ERROR → wc -l считает: '+count;
+  }else{rows[i].classList.remove('scan');rows[i].classList.add('drop');pipeStat.textContent='grep отбросил строку без ERROR ✗';}
+  await sleep(200);
+ }
+ if(my!==pipeToken)return;
+ pipeStat.textContent='Готово: из 6 строк grep оставил 2 → wc -l вернул 2.';
+ pipeRunBtn.disabled=false;pipeRunBtn.textContent='▶ Ещё раз';
+}
+pipeRunBtn.addEventListener('click',pipePlay);
+$('#pipeReset').addEventListener('click',pipeReset);
+
+/* ================= RWX ================= */
+const rwxState=[1,1,1,1,0,1,1,0,1];
+const rwxBtns=$$('.rwxgrid button');
+function rwxRender(){
+ rwxBtns.forEach(b=>{const i=+b.dataset.i;b.setAttribute('aria-pressed',rwxState[i]?'true':'false');});
+ let sym='-',num='';
+ for(let g=0;g<3;g++){const r=rwxState[g*3],w=rwxState[g*3+1],x=rwxState[g*3+2];
+  sym+=(r?'r':'-')+(w?'w':'-')+(x?'x':'-');num+=String(r*4+w*2+x);}
+ $('#rwxSym').textContent=sym;$('#rwxNum').textContent=num;
+ $('#rwxCmd').textContent='chmod '+num+' deploy.sh';
+}
+rwxBtns.forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i;rwxState[i]=rwxState[i]?0:1;rwxRender();}));
+$$('.rwxpresets button').forEach(b=>b.addEventListener('click',()=>{
+ const d=b.dataset.set.split('').map(Number);
+ for(let g=0;g<3;g++){rwxState[g*3]=d[g]&4?1:0;rwxState[g*3+1]=d[g]&2?1:0;rwxState[g*3+2]=d[g]&1?1:0;}
+ rwxRender();
+}));
+$('#rwxCopy').addEventListener('click',function(){
+ const txt=$('#rwxCmd').textContent;
+ const done=()=>{this.textContent='скопировано ✓';setTimeout(()=>{this.textContent='копировать';},1200);};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done).catch(()=>{fallbackCopy(txt);done();});
+ else{fallbackCopy(txt);done();}
+});
+function fallbackCopy(txt){const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(err){}ta.remove();}
+rwxRender();
+
+/* ================= СТАРТ ================= */
+refreshProgress();
+let startId=location.hash.slice(1);
+if(!lessonMeta[startId]){try{startId=localStorage.getItem(storeLesson)||'m0';}catch(err){startId='m0';}}
+openLesson(startId,true);
+if(location.hash!=='#'+activeLesson)history.replaceState(null,'','#'+activeLesson);
+let termPref=null;try{termPref=localStorage.getItem(storeTerm);}catch(err){}
+setTerm(termPref!==null?termPref==='1':mqDesktop.matches);
+</script>
+</body>
+</html>
